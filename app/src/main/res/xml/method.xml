@@ -3,6 +3,6 @@
     android:settingsActivity="com.viet.keyboard.SetupActivity">
     <subtype
         android:label="@string/subtype_vi"
-        android:imeSubtypeLanguage="vi"
+        android:imeSubtypeLocale="vi"
         android:imeSubtypeMode="keyboard" />
 </input-method>
