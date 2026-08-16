@@ -107,8 +107,7 @@ public class VietnameseIME extends InputMethodService {
                 break;
 
             case VietnameseKeyboardManager.KEY_TOGGLE_NUMBERS:
-                mShowNumbers = !mShowNumbers;
-                mKeyboardManager.toggleNumberRow(mShowNumbers);
+                mKeyboardManager.toggleSymbolsPanel(!mKeyboardManager.isSymbolsOn());
                 break;
 
             case VietnameseKeyboardManager.KEY_TOGGLE_EMOJI:

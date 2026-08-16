@@ -69,6 +69,17 @@ public class VietnameseKeyboardManager {
         {"👍","👎","👏","🙌","✌️","🤞","💪","🤙","👋","🤝","🫶","❤️‍🔥","😤","💯","🆗"}
     };
 
+    // Symbols and Numbers layouts (Samsung keyboard style)
+    private static final String[] SYM_PAGE1_ROW1 = {"1","2","3","4","5","6","7","8","9","0"};
+    private static final String[] SYM_PAGE1_ROW2 = {"@","#","$","%","&","-","+","(",")","/"};
+    private static final String[] SYM_PAGE1_ROW3 = {"*","\"", "'",":",";","!","?","~","\\","="};
+    private static final String[] SYM_PAGE1_ROW4 = {"_","<",">","[","]","{","}","^"};
+
+    private static final String[] SYM_PAGE2_ROW1 = {"1","2","3","4","5","6","7","8","9","0"};
+    private static final String[] SYM_PAGE2_ROW2 = {"^","°","•","|","`","¥","€","£","¢","§"};
+    private static final String[] SYM_PAGE2_ROW3 = {"×","÷","±","≠","≤","≥","«","»","“","”"};
+    private static final String[] SYM_PAGE2_ROW4 = {"©","®","™","…","¿","¡","√","π"};
+
     private final Context mContext;
     private final View mRootView;
     private final OnKeyListener mKeyListener;
@@ -80,10 +91,16 @@ public class VietnameseKeyboardManager {
     private LinearLayout mRow1, mRow2, mRow3, mRowBottom;
     private LinearLayout mEmojiContainer;
     private HorizontalScrollView mEmojiPanel;
+    private LinearLayout mSymbolsPanel;
+    private LinearLayout mSymRow1, mSymRow2, mSymRow3, mSymRow4;
+
     private List<TextView> mAllLetterKeys = new ArrayList<>();
     private TextView mEmojiBtn;
+    private TextView mNumToggleBtn;
     private boolean mShiftOn = false;
     private boolean mShowNumbers = true;
+    private boolean mSymbolsOn = false;
+    private boolean mSymbolsPage2 = false;
 
     public interface OnKeyListener {
         void onKey(String text);
@@ -110,6 +127,12 @@ public class VietnameseKeyboardManager {
         mRowBottom    = rootView.findViewById(R.id.row_bottom);
         mEmojiPanel   = rootView.findViewById(R.id.emoji_panel);
         mEmojiContainer = rootView.findViewById(R.id.emoji_container);
+
+        mSymbolsPanel = rootView.findViewById(R.id.symbols_panel);
+        mSymRow1      = rootView.findViewById(R.id.sym_row1);
+        mSymRow2      = rootView.findViewById(R.id.sym_row2);
+        mSymRow3      = rootView.findViewById(R.id.sym_row3);
+        mSymRow4      = rootView.findViewById(R.id.sym_row4);
     }
 
     public void buildKeyboard(boolean showNumbers) {
@@ -124,6 +147,7 @@ public class VietnameseKeyboardManager {
         buildRow3();
         buildBottomRow();
         buildEmojiPanel();
+        buildSymbolsPanel();
 
         if (!showNumbers) {
             mNumberRow.setVisibility(View.GONE);
@@ -320,11 +344,11 @@ public class VietnameseKeyboardManager {
         mEmojiBtn.setOnClickListener(v -> mSpecialKeyListener.onSpecialKey(KEY_TOGGLE_EMOJI));
         mRowBottom.addView(mEmojiBtn);
 
-        // Number row toggle
-        TextView numToggle = makeKey("123", 13, "#FF1A1A2E", "#FF4ECDC4");
-        numToggle.setLayoutParams(lpSmall);
-        numToggle.setOnClickListener(v -> mSpecialKeyListener.onSpecialKey(KEY_TOGGLE_NUMBERS));
-        mRowBottom.addView(numToggle);
+        // Number row toggle (123 / ABC)
+        mNumToggleBtn = makeKey("123", 13, "#FF1A1A2E", "#FF4ECDC4");
+        mNumToggleBtn.setLayoutParams(lpSmall);
+        mNumToggleBtn.setOnClickListener(v -> mSpecialKeyListener.onSpecialKey(KEY_TOGGLE_NUMBERS));
+        mRowBottom.addView(mNumToggleBtn);
 
         // Comma (dấu phẩy ở bên trái khoảng trắng)
         TextView commaBtn = makeKey(",", 16, "#FF2D2D44", "#FFFFFFFF");
@@ -349,6 +373,82 @@ public class VietnameseKeyboardManager {
         enter.setLayoutParams(lpEnter);
         enter.setOnClickListener(v -> mSpecialKeyListener.onSpecialKey(KEY_ENTER));
         mRowBottom.addView(enter);
+    }
+
+    // ──────────────────────────────────────────────────────────
+    // Symbols & Numbers Panel (Samsung Keyboard style)
+    // ──────────────────────────────────────────────────────────
+    private void buildSymbolsPanel() {
+        if (mSymbolsPanel == null) return;
+        mSymRow1.removeAllViews();
+        mSymRow2.removeAllViews();
+        mSymRow3.removeAllViews();
+        mSymRow4.removeAllViews();
+
+        LinearLayout.LayoutParams lpKey = new LinearLayout.LayoutParams(0,
+                LinearLayout.LayoutParams.MATCH_PARENT, 1f);
+        lpKey.setMargins(3, 0, 3, 0);
+
+        LinearLayout.LayoutParams lpSpecial = new LinearLayout.LayoutParams(0,
+                LinearLayout.LayoutParams.MATCH_PARENT, 1.4f);
+        lpSpecial.setMargins(3, 0, 3, 0);
+
+        String[] row1 = mSymbolsPage2 ? SYM_PAGE2_ROW1 : SYM_PAGE1_ROW1;
+        String[] row2 = mSymbolsPage2 ? SYM_PAGE2_ROW2 : SYM_PAGE1_ROW2;
+        String[] row3 = mSymbolsPage2 ? SYM_PAGE2_ROW3 : SYM_PAGE1_ROW3;
+        String[] row4 = mSymbolsPage2 ? SYM_PAGE2_ROW4 : SYM_PAGE1_ROW4;
+
+        // Row 1 (Numbers)
+        for (String k : row1) {
+            TextView key = makeKey(k, 16, "#FF1E3A5F", "#FFCCE5FF");
+            key.setLayoutParams(lpKey);
+            key.setOnClickListener(v -> mKeyListener.onKey(k));
+            mSymRow1.addView(key);
+        }
+
+        // Row 2 (Symbols 1)
+        for (String k : row2) {
+            TextView key = makeKey(k, 16, "#FF2D2D44", "#FFFFFFFF");
+            key.setLayoutParams(lpKey);
+            key.setOnClickListener(v -> mKeyListener.onKey(k));
+            mSymRow2.addView(key);
+        }
+
+        // Row 3 (Symbols 2)
+        for (String k : row3) {
+            TextView key = makeKey(k, 16, "#FF2D2D44", "#FFFFFFFF");
+            key.setLayoutParams(lpKey);
+            key.setOnClickListener(v -> mKeyListener.onKey(k));
+            mSymRow3.addView(key);
+        }
+
+        // Row 4: [1/2 or 2/2] [Symbols...] [⌫]
+        String pageLabel = mSymbolsPage2 ? "2/2" : "1/2";
+        TextView pageToggle = makeKey(pageLabel, 13, "#FF16213E", "#FF4ECDC4");
+        pageToggle.setLayoutParams(lpSpecial);
+        pageToggle.setOnClickListener(v -> {
+            mSymbolsPage2 = !mSymbolsPage2;
+            buildSymbolsPanel();
+        });
+        mSymRow4.addView(pageToggle);
+
+        for (String k : row4) {
+            TextView key = makeKey(k, 16, "#FF2D2D44", "#FFFFFFFF");
+            key.setLayoutParams(lpKey);
+            key.setOnClickListener(v -> mKeyListener.onKey(k));
+            mSymRow4.addView(key);
+        }
+
+        TextView del = makeKey("⌫", 18, "#FF2D2D44", "#FFFF6B6B");
+        del.setLayoutParams(lpSpecial);
+        del.setOnClickListener(v -> mSpecialKeyListener.onSpecialKey(KEY_DELETE));
+        del.setOnLongClickListener(v -> {
+            for (int i = 0; i < 5; i++) {
+                mSpecialKeyListener.onSpecialKey(KEY_DELETE);
+            }
+            return true;
+        });
+        mSymRow4.addView(del);
     }
 
     // ──────────────────────────────────────────────────────────
@@ -484,16 +584,70 @@ public class VietnameseKeyboardManager {
         }
     }
 
+    public boolean isSymbolsOn() {
+        return mSymbolsOn;
+    }
+
+    public void toggleSymbolsPanel(boolean show) {
+        mSymbolsOn = show;
+        if (show) {
+            // Close emoji panel if open
+            if (mEmojiPanel != null) mEmojiPanel.setVisibility(View.GONE);
+            if (mEmojiBtn != null) mEmojiBtn.setText("😊");
+
+            // Hide normal letter keys and tone row
+            if (mNumberRow != null) mNumberRow.setVisibility(View.GONE);
+            if (mToneRow != null) mToneRow.setVisibility(View.GONE);
+            if (mVnRow != null) mVnRow.setVisibility(View.GONE);
+            if (mRow1 != null) mRow1.setVisibility(View.GONE);
+            if (mRow2 != null) mRow2.setVisibility(View.GONE);
+            if (mRow3 != null) mRow3.setVisibility(View.GONE);
+
+            // Show symbols panel
+            if (mSymbolsPanel != null) {
+                mSymbolsPanel.setVisibility(View.VISIBLE);
+                buildSymbolsPanel();
+            }
+
+            if (mNumToggleBtn != null) {
+                mNumToggleBtn.setText("ABC");
+                mNumToggleBtn.setTextColor(Color.parseColor("#FFFFE66D"));
+            }
+        } else {
+            // Restore normal letter keys
+            if (mSymbolsPanel != null) mSymbolsPanel.setVisibility(View.GONE);
+
+            if (mToneRow != null) mToneRow.setVisibility(View.VISIBLE);
+            if (mVnRow != null) mVnRow.setVisibility(View.VISIBLE);
+            if (mRow1 != null) mRow1.setVisibility(View.VISIBLE);
+            if (mRow2 != null) mRow2.setVisibility(View.VISIBLE);
+            if (mRow3 != null) mRow3.setVisibility(View.VISIBLE);
+            if (mNumberRow != null) mNumberRow.setVisibility(mShowNumbers ? View.VISIBLE : View.GONE);
+
+            if (mNumToggleBtn != null) {
+                mNumToggleBtn.setText("123");
+                mNumToggleBtn.setTextColor(Color.parseColor("#FF4ECDC4"));
+            }
+        }
+    }
+
     public void toggleNumberRow(boolean show) {
         mShowNumbers = show;
-        if (mEmojiPanel.getVisibility() != View.VISIBLE) {
+        if (mEmojiPanel.getVisibility() != View.VISIBLE && !mSymbolsOn) {
             mNumberRow.setVisibility(show ? View.VISIBLE : View.GONE);
         }
     }
 
     public void toggleEmojiPanel(boolean show) {
         if (show) {
-            // Ẩn tất cả các hàng phím chữ và số đi cho gọn
+            // Ẩn tất cả các hàng phím chữ, số và ký hiệu đi cho gọn
+            if (mSymbolsPanel != null) mSymbolsPanel.setVisibility(View.GONE);
+            mSymbolsOn = false;
+            if (mNumToggleBtn != null) {
+                mNumToggleBtn.setText("123");
+                mNumToggleBtn.setTextColor(Color.parseColor("#FF4ECDC4"));
+            }
+
             if (mNumberRow != null) mNumberRow.setVisibility(View.GONE);
             if (mToneRow != null) mToneRow.setVisibility(View.GONE);
             if (mVnRow != null) mVnRow.setVisibility(View.GONE);

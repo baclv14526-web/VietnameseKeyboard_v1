@@ -72,9 +72,57 @@
         android:layout_height="48dp"
         android:orientation="horizontal"
         android:paddingStart="4dp"
-        android:paddingEnd="4dp"
-        android:paddingTop="2dp"
-        android:paddingBottom="2dp">
+    <!-- Symbols & Numbers Panel (Samsung keyboard style) -->
+    <LinearLayout
+        android:id="@+id/symbols_panel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:id="@+id/sym_row1"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:paddingTop="3dp"
+            android:paddingBottom="2dp">
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/sym_row2"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp">
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/sym_row3"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp">
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/sym_row4"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp">
+        </LinearLayout>
     </LinearLayout>
 
     <!-- Emoji Panel (replaces key rows when active) -->
