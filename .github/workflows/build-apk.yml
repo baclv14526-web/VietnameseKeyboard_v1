@@ -5,7 +5,6 @@ on:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
-  # Cho phép chạy thủ công từ tab Actions
   workflow_dispatch:
 
 jobs:
@@ -18,7 +17,7 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v4
 
-      # 2. Cài Java 17 (yêu cầu của AGP 8.x)
+      # 2. Cài Java 17
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -26,11 +25,26 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      # 3. Cấp quyền thực thi cho gradlew
+      # 3. Tải gradle-wrapper.jar nếu chưa có trong repo
+      - name: Download gradle-wrapper.jar if missing
+        run: |
+          JAR=gradle/wrapper/gradle-wrapper.jar
+          if [ ! -f "$JAR" ] || [ "$(wc -c < "$JAR")" -lt 10000 ]; then
+            echo "Downloading gradle-wrapper.jar..."
+            mkdir -p gradle/wrapper
+            curl -fsSL \
+              "https://raw.githubusercontent.com/gradle/gradle/v8.4.0/gradle/wrapper/gradle-wrapper.jar" \
+              -o "$JAR"
+            echo "Downloaded: $(wc -c < "$JAR") bytes"
+          else
+            echo "gradle-wrapper.jar already present ($(wc -c < "$JAR") bytes)"
+          fi
+
+      # 4. Cấp quyền thực thi cho gradlew
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # 4. Cache Gradle để lần sau build nhanh hơn
+      # 5. Cache Gradle
       - name: Cache Gradle packages
         uses: actions/cache@v4
         with:
@@ -41,11 +55,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      # 5. Build Debug APK (không cần keystore, dùng để test)
+      # 6. Build Debug APK
       - name: Build Debug APK
         run: ./gradlew assembleDebug --stacktrace
 
-      # 6. Upload Debug APK lên Artifacts
+      # 7. Upload Debug APK
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
@@ -53,12 +67,13 @@ jobs:
           path: app/build/outputs/apk/debug/*.apk
           retention-days: 30
 
-      # 7. Build Release APK (ký bằng keystore trong Secrets)
+      # 8. Build Release APK (unsigned)
       - name: Build Release APK
         run: ./gradlew assembleRelease --stacktrace
 
-      # 8. Ký Release APK bằng keystore lưu trong GitHub Secrets
+      # 9. Ký Release APK (chỉ chạy khi có Secrets)
       - name: Sign Release APK
+        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
         uses: r0adkll/sign-android-release@v1
         id: sign_app
         with:
@@ -70,20 +85,32 @@ jobs:
         env:
           BUILD_TOOLS_VERSION: "34.0.0"
 
-      # 9. Upload Release APK đã ký lên Artifacts
+      # 10. Upload Release APK đã ký
       - name: Upload Signed Release APK
+        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
         uses: actions/upload-artifact@v4
         with:
-          name: BanPhimViet-release-${{ github.run_number }}
+          name: BanPhimViet-release-signed-${{ github.run_number }}
           path: ${{ steps.sign_app.outputs.signedReleaseFile }}
           retention-days: 90
 
-      # 10. Tạo GitHub Release tự động khi push tag (vd: v1.0.0)
+      # 10b. Upload Release APK chưa ký (khi chưa có Secrets)
+      - name: Upload Unsigned Release APK
+        if: ${{ secrets.KEYSTORE_BASE64 == '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: BanPhimViet-release-unsigned-${{ github.run_number }}
+          path: app/build/outputs/apk/release/*.apk
+          retention-days: 30
+
+      # 11. Tạo GitHub Release khi push tag v*.*.*
       - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          files: ${{ steps.sign_app.outputs.signedReleaseFile }}
+          files: |
+            app/build/outputs/apk/debug/*.apk
+            app/build/outputs/apk/release/*.apk
           name: "Bàn Phím Việt ${{ github.ref_name }}"
           body: |
             ## 📲 Bàn Phím Tiếng Việt ${{ github.ref_name }}

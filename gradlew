@@ -1,4 +1,5 @@
 #!/bin/sh
+
 #
 # Copyright © 2015-2021 the original authors.
 #
@@ -14,11 +15,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# SPDX-License-Identifier: Apache-2.0
-#
 
 ##############################################################################
-# Gradle start up script for UN*X
+#
+#   Gradle start up script for UN*X
+#
 ##############################################################################
 
 # Attempt to set APP_HOME
@@ -92,7 +93,7 @@ location of your Java installation."
     fi
 else
     JAVACMD=java
-    if ! command -v java >/dev/null 2>&1
+    if ! command -v java > /dev/null 2>&1
     then
         die "ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
 
@@ -105,8 +106,6 @@ fi
 if ! "$cygwin" && ! "$darwin" && ! "$nonstop" ; then
     case $MAX_FD in #(
       max*)
-        # In POSIX sh, ulimit -H is undefined. That's why the result is checked to see if it worked.
-        # shellcheck disable=SC2039,SC3045
         MAX_FD=$( ulimit -H -n ) ||
             warn "Could not query maximum file descriptor limit"
         ;;
@@ -114,8 +113,6 @@ if ! "$cygwin" && ! "$darwin" && ! "$nonstop" ; then
     case $MAX_FD in  #(
       '' | soft) :;; #( No limit
       *)
-        # In POSIX sh, ulimit -n is undefined. That's why the result is checked to see if it worked.
-        # shellcheck disable=SC2039,SC3045
         ulimit -n "$MAX_FD" ||
             warn "Could not set maximum file descriptor limit to $MAX_FD"
     esac
@@ -134,29 +131,17 @@ set -- \
         "$@"
 
 # Stop when "xargs" is not available.
-if ! command -v xargs >/dev/null 2>&1
+if ! command -v xargs > /dev/null 2>&1
 then
     die "xargs is not available"
 fi
 
 # Use "xargs" to parse quoted args.
-#
-# With -n1 it outputs one arg per line, with the quotes and backslashes removed.
-#
-# In Bash we could simply go:
-#
-#   readarray ARGS < <( xargs -n1 <<<"$var" ) &&
-#   set -- "${ARGS[@]}" "$@"
-#
-# but POSIX shell has neither arrays nor command substitution, so instead we
-# post-process each arg (as a line of input to sed) to backslash-escape any
-# temporary potential characters, then use xargs to remove the backslashes.
-xargs -n1 \
-      < <( printf '%s\n' "$DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS" ) \
-      | sed ' s~[^-[:alnum:]+,./:=@_]~\\&~g; ' \
-      | xargs -n1 \
-      | xargs -r -d '\n' -a /dev/stdin \
-      | tr -d '\n' \
-      | xargs \
-      -- "$JAVACMD" \
-      "$@"
+eval "set -- $(
+        printf '%s\n' "$DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS" |
+        xargs -n1 |
+        sed ' s~[^-[:alnum:]+,./:=@_]~\\&~g; ' |
+        tr '\n' ' '
+    ) $@"
+
+exec "$JAVACMD" "$@"
