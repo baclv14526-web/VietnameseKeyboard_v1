@@ -81,7 +81,9 @@ public class VietnameseKeyboardManager {
     private LinearLayout mEmojiContainer;
     private HorizontalScrollView mEmojiPanel;
     private List<TextView> mAllLetterKeys = new ArrayList<>();
+    private TextView mEmojiBtn;
     private boolean mShiftOn = false;
+    private boolean mShowNumbers = true;
 
     public interface OnKeyListener {
         void onKey(String text);
@@ -111,6 +113,7 @@ public class VietnameseKeyboardManager {
     }
 
     public void buildKeyboard(boolean showNumbers) {
+        mShowNumbers = showNumbers;
         mAllLetterKeys.clear();
 
         buildNumberRow();
@@ -290,17 +293,21 @@ public class VietnameseKeyboardManager {
     }
 
     // ──────────────────────────────────────────────────────────
-    // Bottom row: [😊][Số][  Khoảng trắng  ][↵]
+    // Bottom row: [😊][123][,][  Khoảng trắng  ][.][⏎ Gửi]
     // ──────────────────────────────────────────────────────────
     private void buildBottomRow() {
         mRowBottom.removeAllViews();
 
         LinearLayout.LayoutParams lpSmall = new LinearLayout.LayoutParams(0,
-                LinearLayout.LayoutParams.MATCH_PARENT, 1.2f);
+                LinearLayout.LayoutParams.MATCH_PARENT, 1.1f);
         lpSmall.setMargins(3, 0, 3, 0);
 
+        LinearLayout.LayoutParams lpPunct = new LinearLayout.LayoutParams(0,
+                LinearLayout.LayoutParams.MATCH_PARENT, 1.1f);
+        lpPunct.setMargins(3, 0, 3, 0);
+
         LinearLayout.LayoutParams lpSpace = new LinearLayout.LayoutParams(0,
-                LinearLayout.LayoutParams.MATCH_PARENT, 4f);
+                LinearLayout.LayoutParams.MATCH_PARENT, 3.8f);
         lpSpace.setMargins(3, 0, 3, 0);
 
         LinearLayout.LayoutParams lpEnter = new LinearLayout.LayoutParams(0,
@@ -308,10 +315,10 @@ public class VietnameseKeyboardManager {
         lpEnter.setMargins(3, 0, 3, 0);
 
         // Emoji toggle
-        TextView emojiBtn = makeKey("😊", 18, "#FF1A1A2E", "#FFFFFFFF");
-        emojiBtn.setLayoutParams(lpSmall);
-        emojiBtn.setOnClickListener(v -> mSpecialKeyListener.onSpecialKey(KEY_TOGGLE_EMOJI));
-        mRowBottom.addView(emojiBtn);
+        mEmojiBtn = makeKey("😊", 18, "#FF1A1A2E", "#FFFFFFFF");
+        mEmojiBtn.setLayoutParams(lpSmall);
+        mEmojiBtn.setOnClickListener(v -> mSpecialKeyListener.onSpecialKey(KEY_TOGGLE_EMOJI));
+        mRowBottom.addView(mEmojiBtn);
 
         // Number row toggle
         TextView numToggle = makeKey("123", 13, "#FF1A1A2E", "#FF4ECDC4");
@@ -319,11 +326,23 @@ public class VietnameseKeyboardManager {
         numToggle.setOnClickListener(v -> mSpecialKeyListener.onSpecialKey(KEY_TOGGLE_NUMBERS));
         mRowBottom.addView(numToggle);
 
-        // Space
+        // Comma (dấu phẩy ở bên trái khoảng trắng)
+        TextView commaBtn = makeKey(",", 16, "#FF2D2D44", "#FFFFFFFF");
+        commaBtn.setLayoutParams(lpPunct);
+        commaBtn.setOnClickListener(v -> mKeyListener.onKey(","));
+        mRowBottom.addView(commaBtn);
+
+        // Space (Khoảng trắng)
         TextView space = makeKey("Khoảng trắng", 12, "#FF2D2D44", "#FFAAAACC");
         space.setLayoutParams(lpSpace);
         space.setOnClickListener(v -> mSpecialKeyListener.onSpecialKey(KEY_SPACE));
         mRowBottom.addView(space);
+
+        // Period (dấu chấm ở bên phải khoảng trắng)
+        TextView dotBtn = makeKey(".", 16, "#FF2D2D44", "#FFFFFFFF");
+        dotBtn.setLayoutParams(lpPunct);
+        dotBtn.setOnClickListener(v -> mKeyListener.onKey("."));
+        mRowBottom.addView(dotBtn);
 
         // Enter/Return
         TextView enter = makeKey("⏎ Gửi", 13, "#FFE94560", "#FFFFFFFF");
@@ -343,6 +362,10 @@ public class VietnameseKeyboardManager {
             "🍜 Đồ ăn", "❤️ Trái tim", "🎵 Hoạt động", "👍 Chat"
         };
 
+        int sizePx = (int) (46 * mContext.getResources().getDisplayMetrics().density);
+        int marginHorizontal = (int) (7 * mContext.getResources().getDisplayMetrics().density);
+        int marginVertical = (int) (4 * mContext.getResources().getDisplayMetrics().density);
+
         for (int r = 0; r < EMOJI_ROWS.length; r++) {
             LinearLayout row = new LinearLayout(mContext);
             row.setOrientation(LinearLayout.VERTICAL);
@@ -351,12 +374,13 @@ public class VietnameseKeyboardManager {
             // Category label
             TextView label = new TextView(mContext);
             label.setText(categoryLabels[r]);
-            label.setTextSize(10f);
-            label.setTextColor(Color.parseColor("#FF8888AA"));
-            label.setPadding(8, 0, 8, 4);
+            label.setTextSize(11f);
+            label.setTextColor(Color.parseColor("#FF4ECDC4"));
+            label.setTypeface(Typeface.DEFAULT_BOLD);
+            label.setPadding(8, 2, 8, 4);
             row.addView(label);
 
-            // Emoji row
+            // Emoji row with generous spacing
             LinearLayout emojiRow = new LinearLayout(mContext);
             emojiRow.setOrientation(LinearLayout.HORIZONTAL);
 
@@ -365,9 +389,13 @@ public class VietnameseKeyboardManager {
                 ev.setText(emoji);
                 ev.setTextSize(22f);
                 ev.setGravity(Gravity.CENTER);
-                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(52, 52);
-                lp.setMargins(4, 2, 4, 2);
+                ev.setBackgroundResource(R.drawable.key_bg_rounded);
+                ev.getBackground().setTint(Color.parseColor("#FF16213E"));
+
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(sizePx, sizePx);
+                lp.setMargins(marginHorizontal, marginVertical, marginHorizontal, marginVertical);
                 ev.setLayoutParams(lp);
+
                 ev.setOnClickListener(v -> mKeyListener.onKey(ev.getText().toString()));
                 emojiRow.addView(ev);
             }
@@ -457,10 +485,33 @@ public class VietnameseKeyboardManager {
     }
 
     public void toggleNumberRow(boolean show) {
-        mNumberRow.setVisibility(show ? View.VISIBLE : View.GONE);
+        mShowNumbers = show;
+        if (mEmojiPanel.getVisibility() != View.VISIBLE) {
+            mNumberRow.setVisibility(show ? View.VISIBLE : View.GONE);
+        }
     }
 
     public void toggleEmojiPanel(boolean show) {
-        mEmojiPanel.setVisibility(show ? View.VISIBLE : View.GONE);
+        if (show) {
+            // Ẩn tất cả các hàng phím chữ và số đi cho gọn
+            if (mNumberRow != null) mNumberRow.setVisibility(View.GONE);
+            if (mToneRow != null) mToneRow.setVisibility(View.GONE);
+            if (mVnRow != null) mVnRow.setVisibility(View.GONE);
+            if (mRow1 != null) mRow1.setVisibility(View.GONE);
+            if (mRow2 != null) mRow2.setVisibility(View.GONE);
+            if (mRow3 != null) mRow3.setVisibility(View.GONE);
+            if (mEmojiPanel != null) mEmojiPanel.setVisibility(View.VISIBLE);
+            if (mEmojiBtn != null) mEmojiBtn.setText("⌨️");
+        } else {
+            // Hiện lại toàn bộ phím chữ và số
+            if (mToneRow != null) mToneRow.setVisibility(View.VISIBLE);
+            if (mVnRow != null) mVnRow.setVisibility(View.VISIBLE);
+            if (mRow1 != null) mRow1.setVisibility(View.VISIBLE);
+            if (mRow2 != null) mRow2.setVisibility(View.VISIBLE);
+            if (mRow3 != null) mRow3.setVisibility(View.VISIBLE);
+            if (mNumberRow != null) mNumberRow.setVisibility(mShowNumbers ? View.VISIBLE : View.GONE);
+            if (mEmojiPanel != null) mEmojiPanel.setVisibility(View.GONE);
+            if (mEmojiBtn != null) mEmojiBtn.setText("😊");
+        }
     }
 }

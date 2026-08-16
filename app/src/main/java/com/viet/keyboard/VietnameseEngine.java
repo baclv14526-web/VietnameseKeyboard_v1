@@ -4,18 +4,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Vietnamese Engine supporting Telex typing, direct Vietnamese characters,
- * Tone Bar integration, and standard Vietnamese tone mark placement.
+ * Vietnamese Engine focusing on standard tone mark placement and direct character input.
+ * Telex/VNI auto-conversion is removed for direct and clean typing.
  */
 public class VietnameseEngine {
 
     public enum Tone {
         NONE,    // 0: Ngang / Không dấu
-        ACUTE,   // 1: Sắc (´ / s)
-        GRAVE,   // 2: Huyền (` / f)
-        HOOK,    // 3: Hỏi (? / r)
-        TILDE,   // 4: Ngã (~ / x)
-        DOT      // 5: Nặng (. / j)
+        ACUTE,   // 1: Sắc (´)
+        GRAVE,   // 2: Huyền (`)
+        HOOK,    // 3: Hỏi (?)
+        TILDE,   // 4: Ngã (~)
+        DOT      // 5: Nặng (.)
     }
 
     // Mapping vowel to its base forms and tone variations
@@ -74,6 +74,7 @@ public class VietnameseEngine {
      * Remove all tones from a word, returning raw characters with hats/horns intact.
      */
     public static String removeTone(String word) {
+        if (word == null) return null;
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < word.length(); i++) {
             char c = word.charAt(i);
@@ -87,6 +88,7 @@ public class VietnameseEngine {
      * Get the current tone of the word.
      */
     public static Tone getWordTone(String word) {
+        if (word == null) return Tone.NONE;
         for (int i = 0; i < word.length(); i++) {
             Tone t = CHAR_TO_TONE.get(word.charAt(i));
             if (t != null && t != Tone.NONE) {
@@ -98,9 +100,10 @@ public class VietnameseEngine {
 
     /**
      * Determine the index of the vowel that should receive the tone mark
-     * according to standard modern Vietnamese orthography rules.
+     * according to standard Vietnamese orthography rules.
      */
     public static int findToneVowelIndex(String baseWord) {
+        if (baseWord == null || baseWord.isEmpty()) return -1;
         String lower = baseWord.toLowerCase();
         int len = lower.length();
 
@@ -223,7 +226,7 @@ public class VietnameseEngine {
                     }
                 }
             }
-            // Default for 2 vowels: 1st vowel or 2nd vowel depending on standard
+            // Default for 2 vowels: 1st vowel
             return firstVowel;
         }
     }
@@ -235,23 +238,26 @@ public class VietnameseEngine {
 
     /**
      * Apply tone mark to the word at the grammatically correct position.
+     * If the word already has this tone, removes it (toggle behavior).
      */
     public static String applyTone(String word, Tone tone) {
         if (word == null || word.isEmpty()) return word;
 
-        // 1. Strip current tone
+        Tone curTone = getWordTone(word);
         String baseWord = removeTone(word);
-        if (tone == Tone.NONE) {
+
+        // If user selects same tone -> toggle back to none
+        if (curTone == tone || tone == Tone.NONE) {
             return baseWord;
         }
 
-        // 2. Find target vowel position
+        // Find target vowel position
         int targetIdx = findToneVowelIndex(baseWord);
         if (targetIdx == -1 || targetIdx >= baseWord.length()) {
             return baseWord;
         }
 
-        // 3. Replace the vowel with its toned counterpart
+        // Replace vowel with toned version
         char targetChar = baseWord.charAt(targetIdx);
         String toneVariants = VOWEL_TONE_MAP.get(targetChar);
         if (toneVariants == null || tone.ordinal() >= toneVariants.length()) {
@@ -262,161 +268,5 @@ public class VietnameseEngine {
         StringBuilder sb = new StringBuilder(baseWord);
         sb.setCharAt(targetIdx, tonedChar);
         return sb.toString();
-    }
-
-    /**
-     * Process input character with Telex engine and return the updated composing word.
-     */
-    public static ProcessResult processKey(String currentWord, String inputKey) {
-        if (inputKey == null || inputKey.isEmpty()) {
-            return new ProcessResult(currentWord, false);
-        }
-
-        // If input is a full string or special symbol
-        if (inputKey.length() > 1) {
-            return new ProcessResult(currentWord + inputKey, false);
-        }
-
-        char ch = inputKey.charAt(0);
-        char lowerCh = Character.toLowerCase(ch);
-
-        // Check if input is a tone key: s, f, r, x, j, z
-        Tone telexTone = null;
-        switch (lowerCh) {
-            case 's': telexTone = Tone.ACUTE; break;
-            case 'f': telexTone = Tone.GRAVE; break;
-            case 'r': telexTone = Tone.HOOK; break;
-            case 'x': telexTone = Tone.TILDE; break;
-            case 'j': telexTone = Tone.DOT; break;
-            case 'z': telexTone = Tone.NONE; break;
-        }
-
-        if (telexTone != null && !currentWord.isEmpty()) {
-            Tone curTone = getWordTone(currentWord);
-            if (telexTone == Tone.NONE) {
-                // 'z' removes tone
-                if (curTone != Tone.NONE) {
-                    return new ProcessResult(applyTone(currentWord, Tone.NONE), true);
-                }
-            } else if (curTone == telexTone) {
-                // Repeated tone key toggles tone off and appends literal character
-                String noTone = applyTone(currentWord, Tone.NONE);
-                return new ProcessResult(noTone + ch, true);
-            } else {
-                // Apply tone if the word has at least one vowel
-                String toned = applyTone(currentWord, telexTone);
-                if (!toned.equals(currentWord)) {
-                    return new ProcessResult(toned, true);
-                }
-            }
-        }
-
-        // Check for Telex hat/horn modifications:
-        // aa -> â, aw -> ă, ee -> ê, oo -> ô, ow -> ơ, uw -> ư, w -> ư/ơ, dd -> đ
-        if (!currentWord.isEmpty()) {
-            String telexTrans = tryTransformTelexLetter(currentWord, ch);
-            if (telexTrans != null) {
-                return new ProcessResult(telexTrans, true);
-            }
-        }
-
-        // Check if inputting direct Vietnamese letters: ă, â, đ, ê, ô, ơ, ư, or standard letter
-        return new ProcessResult(currentWord + inputKey, false);
-    }
-
-    /**
-     * Try Telex vowel/consonant transformation like aa->â, ee->ê, etc.
-     */
-    private static String tryTransformTelexLetter(String word, char inputChar) {
-        int len = word.length();
-        char lastChar = word.charAt(len - 1);
-        char lowerInput = Character.toLowerCase(inputChar);
-        boolean isUpper = Character.isUpperCase(inputChar) || (Character.isUpperCase(lastChar) && len == 1);
-
-        // Preserve existing word tone
-        Tone curTone = getWordTone(word);
-        String baseWord = removeTone(word);
-        char lastBaseChar = baseWord.charAt(len - 1);
-        char lowerLastBase = Character.toLowerCase(lastBaseChar);
-
-        // 1. Double letter: 'a' -> 'â', 'e' -> 'ê', 'o' -> 'ô', 'd' -> 'đ'
-        if (lowerLastBase == lowerInput) {
-            char transformed = 0;
-            switch (lowerInput) {
-                case 'a': transformed = 'â'; break;
-                case 'e': transformed = 'ê'; break;
-                case 'o': transformed = 'ô'; break;
-                case 'd': transformed = 'đ'; break;
-            }
-            if (transformed != 0) {
-                // If last letter already had hat (e.g., 'â' + 'a' -> 'aa', toggle back)
-                if (lowerLastBase == 'â' || lowerLastBase == 'ê' || lowerLastBase == 'ô' || lowerLastBase == 'đ') {
-                    char orig = lowerLastBase == 'đ' ? 'd' : (lowerLastBase == 'â' ? 'a' : (lowerLastBase == 'ê' ? 'e' : 'o'));
-                    char cOut = Character.isUpperCase(lastBaseChar) ? Character.toUpperCase(orig) : orig;
-                    String toggled = baseWord.substring(0, len - 1) + cOut + inputChar;
-                    return applyTone(toggled, curTone);
-                }
-
-                char cOut = isUpper ? Character.toUpperCase(transformed) : transformed;
-                String updated = baseWord.substring(0, len - 1) + cOut;
-                return applyTone(updated, curTone);
-            }
-        }
-
-        // 2. 'w' modifier
-        if (lowerInput == 'w') {
-            // 'aw' -> 'ă'
-            if (lowerLastBase == 'a') {
-                char cOut = isUpper ? 'Ă' : 'ă';
-                String updated = baseWord.substring(0, len - 1) + cOut;
-                return applyTone(updated, curTone);
-            }
-            // 'ow' -> 'ơ'
-            if (lowerLastBase == 'o') {
-                char cOut = isUpper ? 'Ơ' : 'ơ';
-                String updated = baseWord.substring(0, len - 1) + cOut;
-                return applyTone(updated, curTone);
-            }
-            // 'uw' -> 'ư'
-            if (lowerLastBase == 'u') {
-                char cOut = isUpper ? 'Ư' : 'ư';
-                String updated = baseWord.substring(0, len - 1) + cOut;
-                return applyTone(updated, curTone);
-            }
-            // 'uo' + 'w' -> 'ươ' (e.g. duong -> dươ)
-            if (len >= 2) {
-                char prevChar = Character.toLowerCase(baseWord.charAt(len - 2));
-                if (prevChar == 'u' && lowerLastBase == 'o') {
-                    boolean pUpper = Character.isUpperCase(baseWord.charAt(len - 2));
-                    boolean lUpper = Character.isUpperCase(baseWord.charAt(len - 1));
-                    char uChar = pUpper ? 'Ư' : 'ư';
-                    char oChar = lUpper ? 'Ơ' : 'ơ';
-                    String updated = baseWord.substring(0, len - 2) + uChar + oChar;
-                    return applyTone(updated, curTone);
-                }
-            }
-            // 'w' after consonant or standalone -> 'ư'
-            if (!isVowel(lowerLastBase) || lowerLastBase == 'ư') {
-                // If last was 'ư' and user types 'w' again -> undo to 'w'
-                if (lowerLastBase == 'ư') {
-                    char cOut = isUpper ? 'W' : 'w';
-                    return baseWord.substring(0, len - 1) + cOut;
-                }
-                char cOut = isUpper ? 'Ư' : 'ư';
-                return applyTone(baseWord + cOut, curTone);
-            }
-        }
-
-        return null;
-    }
-
-    public static class ProcessResult {
-        public final String word;
-        public final boolean handledSpecial;
-
-        public ProcessResult(String word, boolean handledSpecial) {
-            this.word = word;
-            this.handledSpecial = handledSpecial;
-        }
     }
 }
