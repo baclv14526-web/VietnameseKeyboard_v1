@@ -23,13 +23,20 @@ public class VietnameseKeyboardManager {
     public static final int KEY_TOGGLE_EMOJI   = -6;
 
     // Vietnamese tones
+    public static final String TONE_ACUTE = "TONE:ACUTE"; // Sắc
+    public static final String TONE_GRAVE = "TONE:GRAVE"; // Huyền
+    public static final String TONE_HOOK  = "TONE:HOOK";  // Hỏi
+    public static final String TONE_TILDE = "TONE:TILDE"; // Ngã
+    public static final String TONE_DOT   = "TONE:DOT";   // Nặng
+    public static final String TONE_NONE  = "TONE:NONE";  // Ngang / Xóa dấu
+
     private static final String[][] TONE_KEYS = {
-        {"´", "Sắc", "#FFFF6B6B"},   // sắc
-        {"`", "Huyền", "#FF4ECDC4"}, // huyền
-        {"~", "Ngã", "#FFFFE66D"},    // ngã
-        {"?", "Hỏi", "#FF95E1D3"},    // hỏi
-        {".", "Nặng", "#FFFF8B94"},   // nặng
-        {"—", "Ngang", "#FF8899AA"}   // ngang (no tone)
+        {"´", "Sắc", "#FFFF6B6B", TONE_ACUTE},
+        {"`", "Huyền", "#FF4ECDC4", TONE_GRAVE},
+        {"?", "Hỏi", "#FF95E1D3", TONE_HOOK},
+        {"~", "Ngã", "#FFFFE66D", TONE_TILDE},
+        {".", "Nặng", "#FFFF8B94", TONE_DOT},
+        {"—", "Ngang", "#FF8899AA", TONE_NONE}
     };
 
     // Vietnamese 29 letters + special chars
@@ -69,6 +76,7 @@ public class VietnameseKeyboardManager {
 
     private LinearLayout mNumberRow;
     private LinearLayout mToneRow;
+    private LinearLayout mVnRow;
     private LinearLayout mRow1, mRow2, mRow3, mRowBottom;
     private LinearLayout mEmojiContainer;
     private HorizontalScrollView mEmojiPanel;
@@ -93,6 +101,7 @@ public class VietnameseKeyboardManager {
 
         mNumberRow    = rootView.findViewById(R.id.number_row);
         mToneRow      = rootView.findViewById(R.id.tone_row);
+        mVnRow        = rootView.findViewById(R.id.vn_row);
         mRow1         = rootView.findViewById(R.id.row1);
         mRow2         = rootView.findViewById(R.id.row2);
         mRow3         = rootView.findViewById(R.id.row3);
@@ -106,6 +115,7 @@ public class VietnameseKeyboardManager {
 
         buildNumberRow();
         buildToneRow();
+        buildVnExtraRow();
         buildRow1();
         buildRow2();
         buildRow3();
@@ -147,6 +157,7 @@ public class VietnameseKeyboardManager {
             String symbol = tone[0];
             String label  = tone[1];
             String color  = tone[2];
+            String action = tone[3];
 
             LinearLayout cell = new LinearLayout(mContext);
             cell.setLayoutParams(lp);
@@ -171,9 +182,27 @@ public class VietnameseKeyboardManager {
             cell.addView(symView);
             cell.addView(lblView);
 
-            // Tone keys insert tone marks via VNI-style
-            cell.setOnClickListener(v -> mKeyListener.onKey(symbol));
+            // Emit tone action
+            cell.setOnClickListener(v -> mKeyListener.onKey(action));
             mToneRow.addView(cell);
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────
+    // Vietnamese extra letters row: ă, â, đ, ê, ô, ơ, ư
+    // ──────────────────────────────────────────────────────────
+    private void buildVnExtraRow() {
+        if (mVnRow == null) return;
+        mVnRow.removeAllViews();
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0,
+                LinearLayout.LayoutParams.MATCH_PARENT, 1f);
+        lp.setMargins(3, 0, 3, 0);
+
+        for (String vnChar : VN_EXTRA_LOWER) {
+            TextView key = makeLetterKey(vnChar);
+            key.setLayoutParams(lp);
+            key.getBackground().setTint(Color.parseColor("#FF202C45"));
+            mVnRow.addView(key);
         }
     }
 
