@@ -10,8 +10,8 @@ android {
         applicationId "com.viet.keyboard"
         minSdk 21
         targetSdk 34
-        versionCode 1
-        versionName "1.0"
+        versionCode 3
+        versionName "1.3"
 
         // Hỗ trợ các kiến trúc CPU phổ biến
         ndk {
@@ -54,8 +54,8 @@ android {
             signingConfig signingConfigs.debug
         }
         release {
-            minifyEnabled true
-            shrinkResources true
+            minifyEnabled false
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             // Luôn có signing config để APK hợp lệ trên Android 9+
             signingConfig signingConfigs.release

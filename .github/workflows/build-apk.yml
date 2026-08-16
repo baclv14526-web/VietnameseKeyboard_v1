@@ -106,12 +106,12 @@ jobs:
           path: ${{ steps.sign_app.outputs.signedReleaseFile }}
           retention-days: 90
 
-      # 10b. Upload Release APK chưa ký (khi chưa có Secrets)
-      - name: Upload Unsigned Release APK
+      # 10b. Upload Release APK (khi chưa có Secrets - đã được ký bằng debug keystore tự động)
+      - name: Upload Release APK
         if: steps.check_secrets.outputs.has_keystore == 'false'
         uses: actions/upload-artifact@v4
         with:
-          name: BanPhimViet-release-unsigned-${{ github.run_number }}
+          name: BanPhimViet-release-v1.3-${{ github.run_number }}
           path: app/build/outputs/apk/release/*.apk
           retention-days: 30
 
