@@ -1,0 +1,106 @@
+name: Build Vietnamese Keyboard APK
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  # Cho phép chạy thủ công từ tab Actions
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build APK
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout code
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      # 2. Cài Java 17 (yêu cầu của AGP 8.x)
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      # 3. Cấp quyền thực thi cho gradlew
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      # 4. Cache Gradle để lần sau build nhanh hơn
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      # 5. Build Debug APK (không cần keystore, dùng để test)
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug --stacktrace
+
+      # 6. Upload Debug APK lên Artifacts
+      - name: Upload Debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: BanPhimViet-debug-${{ github.run_number }}
+          path: app/build/outputs/apk/debug/*.apk
+          retention-days: 30
+
+      # 7. Build Release APK (ký bằng keystore trong Secrets)
+      - name: Build Release APK
+        run: ./gradlew assembleRelease --stacktrace
+
+      # 8. Ký Release APK bằng keystore lưu trong GitHub Secrets
+      - name: Sign Release APK
+        uses: r0adkll/sign-android-release@v1
+        id: sign_app
+        with:
+          releaseDirectory: app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.KEYSTORE_BASE64 }}
+          alias: ${{ secrets.KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+        env:
+          BUILD_TOOLS_VERSION: "34.0.0"
+
+      # 9. Upload Release APK đã ký lên Artifacts
+      - name: Upload Signed Release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: BanPhimViet-release-${{ github.run_number }}
+          path: ${{ steps.sign_app.outputs.signedReleaseFile }}
+          retention-days: 90
+
+      # 10. Tạo GitHub Release tự động khi push tag (vd: v1.0.0)
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ steps.sign_app.outputs.signedReleaseFile }}
+          name: "Bàn Phím Việt ${{ github.ref_name }}"
+          body: |
+            ## 📲 Bàn Phím Tiếng Việt ${{ github.ref_name }}
+
+            ### Cách cài đặt:
+            1. Tải file APK bên dưới
+            2. Bật "Cài từ nguồn không rõ" trên điện thoại
+            3. Mở file APK và cài đặt
+            4. Làm theo hướng dẫn trong app
+
+            ### Tính năng:
+            - 🇻🇳 Đầy đủ 29 chữ cái tiếng Việt
+            - 🎵 6 dấu thanh: sắc, huyền, ngã, hỏi, nặng, ngang
+            - 🔢 Dãy số tắt/hiện được
+            - 😊 Bộ emoji dễ thương 7 danh mục
+            - 🌙 Giao diện tối hiện đại
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

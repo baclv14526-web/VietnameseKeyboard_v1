@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- Keyboard colors -->
+    <color name="kb_background">#FF1A1A2E</color>
+    <color name="kb_key_normal">#FF2D2D44</color>
+    <color name="kb_key_special">#FF16213E</color>
+    <color name="kb_key_accent">#FF0F3460</color>
+    <color name="kb_key_pressed">#FFE94560</color>
+    <color name="kb_text_normal">#FFFFFFFF</color>
+    <color name="kb_text_sub">#FFAAAACC</color>
+    <color name="kb_tone_sac">#FFFF6B6B</color>
+    <color name="kb_tone_huyen">#FF4ECDC4</color>
+    <color name="kb_tone_nga">#FFFFE66D</color>
+    <color name="kb_tone_hoi">#FF95E1D3</color>
+    <color name="kb_tone_nang">#FFFF8B94</color>
+    <color name="kb_number_bg">#FF0D0D1A</color>
+</resources>

@@ -1,0 +1,71 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.viet.keyboard'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.viet.keyboard"
+        minSdk 21
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+    }
+
+    // Signing config đọc từ keystore.properties (local) hoặc env vars (CI)
+    signingConfigs {
+        release {
+            if (System.getenv("KEYSTORE_FILE")) {
+                storeFile file(System.getenv("KEYSTORE_FILE"))
+                storePassword System.getenv("KEYSTORE_PASSWORD")
+                keyAlias System.getenv("KEY_ALIAS")
+                keyPassword System.getenv("KEY_PASSWORD")
+            } else if (rootProject.file("keystore.properties").exists()) {
+                def props = new Properties()
+                props.load(new FileInputStream(rootProject.file("keystore.properties")))
+                storeFile file(props["storeFile"])
+                storePassword props["storePassword"]
+                keyAlias props["keyAlias"]
+                keyPassword props["keyPassword"]
+            }
+        }
+    }
+
+    buildTypes {
+        debug {
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
+            debuggable true
+        }
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            // Dùng signing config nếu có, không thì GitHub Actions tự ký
+            if (System.getenv("KEYSTORE_FILE") ||
+                rootProject.file("keystore.properties").exists()) {
+                signingConfig signingConfigs.release
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    // Tên file APK output
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            outputFileName = "BanPhimViet-${variant.buildType.name}-v${defaultConfig.versionName}.apk"
+        }
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.11.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
+}

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bàn Phím Việt</string>
+    <string name="subtype_vi">Tiếng Việt</string>
+    <string name="setup_title">Cài đặt Bàn Phím Việt</string>
+    <string name="setup_step1">Bước 1: Bật bàn phím trong Cài đặt</string>
+    <string name="setup_step2">Bước 2: Chọn làm bàn phím mặc định</string>
+    <string name="btn_enable">Bật Bàn Phím</string>
+    <string name="btn_select">Chọn Bàn Phím</string>
+    <string name="setup_done">✅ Bàn phím đã sẵn sàng!</string>
+</resources>
