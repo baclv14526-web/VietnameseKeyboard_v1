@@ -185,7 +185,7 @@ public class VietnameseKeyboardManager {
     }
 
     // ──────────────────────────────────────────────────────────
-    // Tone row (dấu thanh)
+    // Tone row (dấu thanh) + Number row toggle button
     // ──────────────────────────────────────────────────────────
     private void buildToneRow() {
         mToneRow.removeAllViews();
@@ -193,6 +193,33 @@ public class VietnameseKeyboardManager {
                 LinearLayout.LayoutParams.MATCH_PARENT, 1f);
         lp.setMargins(3, 0, 3, 0);
 
+        // Nút toggle ẩn/hiện dãy số (1-9, 0)
+        LinearLayout numToggleCell = new LinearLayout(mContext);
+        numToggleCell.setLayoutParams(lp);
+        numToggleCell.setOrientation(LinearLayout.VERTICAL);
+        numToggleCell.setGravity(Gravity.CENTER);
+        numToggleCell.setBackgroundResource(R.drawable.key_bg_rounded);
+        numToggleCell.getBackground().setTint(mShowNumbers ? Color.parseColor("#FF1E3A5F") : Color.parseColor("#FF16213E"));
+
+        TextView numIcon = new TextView(mContext);
+        numIcon.setText(mShowNumbers ? "123▾" : "123▴");
+        numIcon.setTextSize(11.5f);
+        numIcon.setTextColor(mShowNumbers ? Color.parseColor("#FF4ECDC4") : Color.parseColor("#FF8899AA"));
+        numIcon.setTypeface(Typeface.DEFAULT_BOLD);
+        numIcon.setGravity(Gravity.CENTER);
+
+        TextView numLbl = new TextView(mContext);
+        numLbl.setText(mShowNumbers ? "Ẩn số" : "Hiện số");
+        numLbl.setTextSize(7f);
+        numLbl.setTextColor(mShowNumbers ? Color.parseColor("#FFCCE5FF") : Color.parseColor("#FF8899AA"));
+        numLbl.setGravity(Gravity.CENTER);
+
+        numToggleCell.addView(numIcon);
+        numToggleCell.addView(numLbl);
+        numToggleCell.setOnClickListener(v -> toggleNumberRow(!mShowNumbers));
+        mToneRow.addView(numToggleCell);
+
+        // Các phím dấu thanh (font chữ thu nhỏ gọn gàng, tinh tế)
         for (String[] tone : TONE_KEYS) {
             String symbol = tone[0];
             String label  = tone[1];
@@ -208,14 +235,14 @@ public class VietnameseKeyboardManager {
 
             TextView symView = new TextView(mContext);
             symView.setText(symbol);
-            symView.setTextSize(15f);
+            symView.setTextSize(12.5f);
             symView.setTextColor(Color.parseColor(color));
             symView.setTypeface(Typeface.DEFAULT_BOLD);
             symView.setGravity(Gravity.CENTER);
 
             TextView lblView = new TextView(mContext);
             lblView.setText(label);
-            lblView.setTextSize(8f);
+            lblView.setTextSize(7.5f);
             lblView.setTextColor(Color.parseColor("#FFAAAACC"));
             lblView.setGravity(Gravity.CENTER);
 
@@ -767,5 +794,6 @@ public class VietnameseKeyboardManager {
         if (mCurrentMode == KeyboardMode.TEXT && mNumberRow != null) {
             mNumberRow.setVisibility(show ? View.VISIBLE : View.GONE);
         }
+        buildToneRow();
     }
 }
