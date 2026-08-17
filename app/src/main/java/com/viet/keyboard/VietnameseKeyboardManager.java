@@ -64,24 +64,24 @@ public class VietnameseKeyboardManager {
 
     // Emoji Categories and Full Popular Emoji List (Standard Unicode supported across all Android versions)
     private static final String[][] EMOJI_CATEGORIES = {
-        // 1. Mặt cười & Cảm xúc
-        {"😊 Mặt cười & Cảm xúc",
-         "😊","😍","🥰","😘","😂","🤣","😅","😆","🥹","😁","😄","😃","😀","😋","😎","🥳","🤩","😜","🤪","🤗","🤔","🤫","🫡","😴","🤤","😷","🤒","🤧","🥺","😢","😭","😤","😠","😡","🤬","🤯","😳","🥵","🥶","😱","😨","😰","😥","😓","😏","🙄","😬","😌","😔","😪","😵","🤠","👻","🤡","💩","😈","💀","👽","🤖"},
+        // 1. Mặt cười & Cảm xúc (Unicode 9-12, compatible Android 6+)
+        {"\uD83D\uDE0A M\u1EB7t c\u01B0\u1EDDi & C\u1EA3m x\u00FAc",
+         "\uD83D\uDE0A","\uD83D\uDE0D","\uD83E\uDD70","\uD83D\uDE18","\uD83D\uDE02","\uD83E\uDD23","\uD83D\uDE05","\uD83D\uDE06","\uD83D\uDE01","\uD83D\uDE04","\uD83D\uDE03","\uD83D\uDE00","\uD83D\uDE0B","\uD83D\uDE0E","\uD83E\uDD73","\uD83E\uDD29","\uD83D\uDE1C","\uD83E\uDD2A","\uD83E\uDD17","\uD83E\uDD14","\uD83D\uDE34","\uD83E\uDD24","\uD83D\uDE37","\uD83E\uDD12","\uD83E\uDD27","\uD83E\uDD7A","\uD83D\uDE22","\uD83D\uDE2D","\uD83D\uDE24","\uD83D\uDE20","\uD83D\uDE21","\uD83E\uDD2C","\uD83E\uDD2F","\uD83D\uDE33","\uD83E\uDD75","\uD83E\uDD76","\uD83D\uDE31","\uD83D\uDE28","\uD83D\uDE30","\uD83D\uDE25","\uD83D\uDE13","\uD83D\uDE0F","\uD83D\uDE44","\uD83D\uDE2C","\uD83D\uDE14","\uD83D\uDE2A","\uD83D\uDE35","\uD83E\uDD20","\uD83D\uDC7B","\uD83E\uDD21","\uD83D\uDCA9","\uD83D\uDE08","\uD83D\uDC80","\uD83D\uDC7D","\uD83E\uDD16"},
         // 2. Cử chỉ & Bàn tay
-        {"👍 Cử chỉ & Bàn tay",
-         "👍","👎","👏","🙌","👐","🤲","🤝","🙏","✌️","🤞","🤟","🤘","🤙","👈","👉","👆","🖕","👇","☝️","👋","🤚","🖐️","✋","✍️","🤳","💅","💪","🫶","💯","🆗","🆒","🆙","🆘","💢","💥","💫","💦","💨","👂","👃","👀","👁️","🧠","👅","👄","💋"},
+        {"\uD83D\uDC4D C\u1EED ch\u1EC9 & B\u00E0n tay",
+         "\uD83D\uDC4D","\uD83D\uDC4E","\uD83D\uDC4F","\uD83D\uDE4C","\uD83D\uDC50","\uD83E\uDD32","\uD83E\uDD1D","\uD83D\uDE4F","\u270C","\uD83E\uDD1E","\uD83E\uDD1F","\uD83E\uDD18","\uD83E\uDD19","\uD83D\uDC48","\uD83D\uDC49","\uD83D\uDC46","\uD83D\uDD95","\uD83D\uDC47","\u261D","\uD83D\uDC4B","\uD83E\uDD1A","\uD83D\uDD90","\u270B","\u270D","\uD83E\uDD73","\uD83D\uDC85","\uD83D\uDCAA","\uD83D\uDCAF","\uD83C\uDD97","\uD83C\uDD92","\uD83C\uDD99","\uD83C\uDD98","\uD83D\uDCA2","\uD83D\uDCA5","\uD83D\uDCAB","\uD83D\uDCA6","\uD83D\uDCA8","\uD83D\uDC42","\uD83D\uDC43","\uD83D\uDC40","\uD83E\uDDE0","\uD83D\uDC45","\uD83D\uDC44","\uD83D\uDC8B"},
         // 3. Trái tim & Tình yêu
-        {"❤️ Trái tim & Tình yêu",
-         "❤️","🧡","💛","💚","💙","💜","🖤","🤍","🤎","💔","❣️","💕","💞","💓","💗","💖","💘","💝","💟","✨","⭐","🌟","💫","⚡","🔥","☀️","🌙","☁️","🌧️","❄️","🌈","💎","👑","🔮","🧿","🎉","🎊","🎁","🎈","🏮"},
+        {"\u2764 Tr\u00E1i tim & T\u00ECnh y\u00EAu",
+         "\u2764","\uD83E\uDDE1","\uD83D\uDC9B","\uD83D\uDC9A","\uD83D\uDC99","\uD83D\uDC9C","\uD83D\uDDA4","\uD83E\uDD0D","\uD83E\uDD0E","\uD83D\uDC94","\u2763","\uD83D\uDC95","\uD83D\uDC9E","\uD83D\uDC93","\uD83D\uDC97","\uD83D\uDC96","\uD83D\uDC98","\uD83D\uDC9D","\uD83D\uDC9F","\u2728","\u2B50","\uD83C\uDF1F","\uD83D\uDCAB","\u26A1","\uD83D\uDD25","\u2600","\uD83C\uDF19","\u2601","\uD83C\uDF08","\u2744","\uD83D\uDC8E","\uD83D\uDC51","\uD83D\uDD2E","\uD83E\uDDFF","\uD83C\uDF89","\uD83C\uDF8A","\uD83C\uDF81","\uD83C\uDF88","\uD83C\uDFEE"},
         // 4. Đồ ăn & Thức uống
-        {"🍜 Đồ ăn & Thức uống",
-         "🍜","🍲","🍱","🍣","🍙","🍚","🍛","🥟","🍢","🍧","🍨","🍦","🍰","🎂","🍮","🍭","🍬","🍫","🍿","🍩","🍪","☕","🍵","🧋","🥤","🧃","🍺","🍻","🥂","🍷","🍸","🍹","🍾","🍕","🍔","🍟","🌭","🥪","🌮","🌯","🥗","🍝","🥖","🥐","🍞","🍳","🧇","🥞","🍎","🍉","🍇","🍓","🍒","🍑","🥭","🍍","🥥","🥝","🥑"},
+        {"\uD83C\uDF5C \u0110\u1ED3 \u0103n & Th\u1EE9c u\u1ED1ng",
+         "\uD83C\uDF5C","\uD83C\uDF72","\uD83C\uDF71","\uD83C\uDF63","\uD83C\uDF59","\uD83C\uDF5A","\uD83C\uDF5B","\uD83E\uDD5F","\uD83C\uDF62","\uD83C\uDF67","\uD83C\uDF68","\uD83C\uDF66","\uD83C\uDF70","\uD83C\uDF82","\uD83C\uDF6E","\uD83C\uDF6D","\uD83C\uDF6C","\uD83C\uDF6B","\uD83C\uDF7F","\uD83C\uDF69","\uD83C\uDF6A","\u2615","\uD83C\uDF75","\uD83E\uDDB8","\uD83E\uDD64","\uD83E\uDDE3","\uD83C\uDF7A","\uD83C\uDF7B","\uD83E\uDD42","\uD83C\uDF77","\uD83C\uDF78","\uD83C\uDF79","\uD83C\uDF7E","\uD83C\uDF55","\uD83C\uDF54","\uD83C\uDF5F","\uD83C\uDF2D","\uD83E\uDD6A","\uD83C\uDF2E","\uD83C\uDF2F","\uD83E\uDD57","\uD83C\uDF5D","\uD83E\uDD56","\uD83E\uDD50","\uD83C\uDF5E","\uD83C\uDF73","\uD83E\uDD67","\uD83E\uDD5E","\uD83C\uDF4E","\uD83C\uDF49","\uD83C\uDF47","\uD83C\uDF53","\uD83C\uDF52","\uD83C\uDF51","\uD83E\uDD6D","\uD83C\uDF4D","\uD83E\uDD65","\uD83E\uDD5D","\uD83E\uDD51"},
         // 5. Động vật & Thiên nhiên
-        {"🌸 Động vật & Thiên nhiên",
-         "🐱","🐶","🐻","🐼","🐨","🐯","🦁","🐮","🐷","🐸","🐵","🐔","🐧","🐦","🐤","🐣","🐥","🦆","🦅","🦉","🦇","🐺","🐗","🐴","🦄","🐝","🐛","🦋","🐌","🐞","🐜","🐢","🐍","🐙","🦑","🦐","🦞","🦀","🐡","🐠","🐟","🐬","🐳","🦈","🐊","🌸","🌺","🌻","🌹","🥀","🌷","🌼","💐","🌾","🌿","🍀","🍁","🍂","🍃"},
+        {"\uD83C\uDF38 \u0110\u1ED9ng v\u1EADt & Thi\u00EAn nhi\u00EAn",
+         "\uD83D\uDC31","\uD83D\uDC36","\uD83D\uDC3B","\uD83D\uDC3C","\uD83D\uDC28","\uD83D\uDC2F","\uD83E\uDD81","\uD83D\uDC2E","\uD83D\uDC37","\uD83D\uDC38","\uD83D\uDC35","\uD83D\uDC14","\uD83D\uDC27","\uD83D\uDC26","\uD83D\uDC24","\uD83D\uDC23","\uD83D\uDC25","\uD83E\uDD86","\uD83E\uDD85","\uD83E\uDD89","\uD83E\uDD87","\uD83D\uDC3A","\uD83D\uDC17","\uD83D\uDC34","\uD83E\uDD84","\uD83D\uDC1D","\uD83D\uDC1B","\uD83E\uDD8B","\uD83D\uDC0C","\uD83D\uDC1E","\uD83D\uDC1C","\uD83D\uDC22","\uD83D\uDC0D","\uD83D\uDC19","\uD83E\uDD91","\uD83E\uDD90","\uD83E\uDD9E","\uD83E\uDD80","\uD83D\uDC21","\uD83D\uDC20","\uD83D\uDC1F","\uD83D\uDC2C","\uD83D\uDC33","\uD83E\uDD88","\uD83D\uDC0A","\uD83C\uDF38","\uD83C\uDF3A","\uD83C\uDF3B","\uD83C\uDF39","\uD83E\uDD40","\uD83C\uDF37","\uD83C\uDF3C","\uD83D\uDC90","\uD83C\uDF3E","\uD83C\uDF3F","\uD83C\uDF40","\uD83C\uDF41","\uD83C\uDF42","\uD83C\uDF43"},
         // 6. Hoạt động & Du lịch
-        {"⚽ Hoạt động & Du lịch",
-         "⚽","🏀","🏈","⚾","🥎","🎾","🏐","🏉","🥏","🎱","🪀","🏓","🏸","🏒","⛳","🎯","🎮","🎲","🧩","🎨","🎬","🎤","🎧","🎼","🎹","🥁","🎷","🎺","🎸","🚗","🚕","🚙","🚌","🚎","🏎️","🚓","🚑","🚒","🚐","🛻","🚚","🚛","🚜","🛵","🏍️","🚲","🛴","✈️","🚀","🛸","🚢","⚓","🏖️","🏝️","🏕️","⛺","🏠","🏡","🏢"}
+        {"\u26BD Ho\u1EA1t \u0111\u1ED9ng & Du l\u1ECBch",
+         "\u26BD","\uD83C\uDFC0","\uD83C\uDFC8","\u26BE","\uD83E\uDD4E","\uD83C\uDFBE","\uD83C\uDFD0","\uD83C\uDFC9","\uD83E\uDD4F","\uD83C\uDFB1","\uD83C\uDFD3","\uD83C\uDFF8","\uD83C\uDFD2","\u26F3","\uD83C\uDFAF","\uD83C\uDFAE","\uD83C\uDFB2","\uD83E\uDDE9","\uD83C\uDFA8","\uD83C\uDFAC","\uD83C\uDFA4","\uD83C\uDFA7","\uD83C\uDFBC","\uD83C\uDFB9","\uD83E\uDD41","\uD83C\uDFB7","\uD83C\uDFBA","\uD83C\uDFB8","\uD83D\uDE97","\uD83D\uDE95","\uD83D\uDE99","\uD83D\uDE8C","\uD83D\uDE8E","\uD83D\uDE93","\uD83D\uDE91","\uD83D\uDE92","\uD83D\uDE90","\uD83D\uDE9A","\uD83D\uDE9B","\uD83D\uDE9C","\uD83D\uDEF5","\uD83D\uDEB2","\uD83D\uDEF4","\u2708","\uD83D\uDE80","\uD83D\uDEF8","\uD83D\uDEA2","\u2693","\uD83C\uDFD6","\uD83C\uDFDD","\uD83C\uDFD5","\u26FA","\uD83C\uDFE0","\uD83C\uDFE1","\uD83C\uDFE2"}
     };
 
     // Symbols and Numbers layouts (Samsung keyboard style)
