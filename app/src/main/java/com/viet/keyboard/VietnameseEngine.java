@@ -101,69 +101,57 @@ public class VietnameseEngine {
     /**
      * Determine the index of the vowel that should receive the tone mark
      * according to standard Vietnamese orthography rules.
+     * Accurately handles: ươ (nướng, hướng, rượu, người, nước), uô (muốn, cuốn),
+     * iê/yê (tiến, chuyện), oa/oe/uy, ua/ưa/ia, qu/gi clusters, etc.
      */
     public static int findToneVowelIndex(String baseWord) {
         if (baseWord == null || baseWord.isEmpty()) return -1;
         String lower = baseWord.toLowerCase();
         int len = lower.length();
 
-        // 1. Find all vowel indices in the word
+        // 1. Xác định vị trí các nguyên âm trong từ
+        // Xử lý các phụ âm đầu đặc biệt "qu" và "gi"
+        int vowelSearchStart = 0;
+        if (lower.startsWith("qu") && len > 2) {
+            // 'u' đi cùng 'q' đóng vai trò là phụ âm đầu ghép, nguyên âm thực sự bắt đầu từ index 2
+            vowelSearchStart = 2;
+        } else if (lower.startsWith("gi") && len > 2 && isVowel(lower.charAt(2))) {
+            // 'i' đi cùng 'g' đóng vai trò là phụ âm đầu ghép nếu sau nó là nguyên âm (ví dụ "già", "giáo", "giương")
+            vowelSearchStart = 2;
+        }
+
         int firstVowel = -1;
         int lastVowel = -1;
         int vowelCount = 0;
 
-        for (int i = 0; i < len; i++) {
+        for (int i = vowelSearchStart; i < len; i++) {
             char c = lower.charAt(i);
             if (isVowel(c)) {
                 if (firstVowel == -1) firstVowel = i;
                 lastVowel = i;
                 vowelCount++;
+            } else if (firstVowel != -1) {
+                // Đã tìm thấy chuỗi nguyên âm liên tiếp và gặp phụ âm cuối -> dừng tìm nguyên âm
+                break;
             }
         }
 
-        if (vowelCount == 0) return -1;
-        if (vowelCount == 1) return firstVowel;
-
-        // Check for special clusters "qu" and "gi"
-        int startIndex = firstVowel;
-        if (lower.startsWith("qu") && len > 2) {
-            // 'u' is part of initial consonant 'qu', main vowels start after 'u'
-            startIndex = 2;
-            firstVowel = -1;
-            lastVowel = -1;
-            vowelCount = 0;
-            for (int i = startIndex; i < len; i++) {
-                char c = lower.charAt(i);
-                if (isVowel(c)) {
-                    if (firstVowel == -1) firstVowel = i;
-                    lastVowel = i;
-                    vowelCount++;
-                }
+        // Nếu trường hợp đặc biệt "qu" hoặc "gi" đứng 1 mình (vowelCount == 0)
+        if (vowelCount == 0) {
+            if (lower.startsWith("qu")) return 1; // chữ 'u'
+            if (lower.startsWith("gi")) return 1; // chữ 'i'
+            for (int i = 0; i < len; i++) {
+                if (isVowel(lower.charAt(i))) return i;
             }
-            if (vowelCount == 0) return 1; // if just "qu"
-            if (vowelCount == 1) return firstVowel;
-        } else if (lower.startsWith("gi") && len > 2) {
-            // If followed by another vowel, 'gi' acts as consonant
-            char nextChar = lower.charAt(2);
-            if (isVowel(nextChar)) {
-                startIndex = 2;
-                firstVowel = -1;
-                lastVowel = -1;
-                vowelCount = 0;
-                for (int i = startIndex; i < len; i++) {
-                    char c = lower.charAt(i);
-                    if (isVowel(c)) {
-                        if (firstVowel == -1) firstVowel = i;
-                        lastVowel = i;
-                        vowelCount++;
-                    }
-                }
-                if (vowelCount == 0) return 1;
-                if (vowelCount == 1) return firstVowel;
-            }
+            return -1;
         }
 
-        // Check if there is an ending consonant after the vowels
+        // Nếu chỉ có 1 nguyên âm duy nhất -> luôn đặt dấu trên nguyên âm đó
+        if (vowelCount == 1) {
+            return firstVowel;
+        }
+
+        // Kiểm tra xem có phụ âm cuối không (các ký tự chữ sau lastVowel)
         boolean hasEndingConsonant = false;
         for (int i = lastVowel + 1; i < len; i++) {
             if (Character.isLetter(lower.charAt(i))) {
@@ -172,63 +160,75 @@ public class VietnameseEngine {
             }
         }
 
-        // Check for diphthongs/triphthongs with special vowel letters (ê, ơ, ư, ô)
+        String vowelCluster = lower.substring(firstVowel, lastVowel + 1);
+
+        // QUY TẮC ĐẶT DẤU TIẾNG VIỆT CHUẨN XÁC:
+
+        // 1. Nhóm chứa 'ươ' (ươ, ươn, ương, ươc, ươt, ươm, ươp, ươi, ươu...)
+        // -> LUÔN LUÔN đặt dấu trên chữ 'ơ' (e.g. nướng, hướng, rượu, người, thương, nước, tươi, lười, mười, hươu)
+        int uoPos = vowelCluster.indexOf("ươ");
+        if (uoPos != -1) {
+            return firstVowel + uoPos + 1; // vị trí của 'ơ'
+        }
+
+        // 2. Nhóm chứa 'uô' (uôn, uông, uôc, uôt, uôm, uôi...)
+        // -> LUÔN LUÔN đặt dấu trên chữ 'ô' (e.g. muốn, cuống, cuộc, chuột, buồn, suối)
+        int uoHatPos = vowelCluster.indexOf("uô");
+        if (uoHatPos != -1) {
+            return firstVowel + uoHatPos + 1; // vị trí của 'ô'
+        }
+
+        // 3. Nhóm chứa 'iê' hoặc 'yê' (iên, iêng, iêt, iêc, iêm, iêp, yê, yên, yêt, uyên, uyêt...)
+        // -> LUÔN LUÔN đặt dấu trên chữ 'ê' (e.g. tiến, tiếng, biết, việc, kiếm, yến, chuyến, duyệt, thuyền)
+        int iePos = vowelCluster.indexOf("iê");
+        if (iePos != -1) {
+            return firstVowel + iePos + 1; // vị trí của 'ê'
+        }
+        int yePos = vowelCluster.indexOf("yê");
+        if (yePos != -1) {
+            return firstVowel + yePos + 1; // vị trí của 'ê'
+        }
+
+        // 4. Nếu có các nguyên âm có dấu mũ hoặc móc đơn độc: 'ê', 'ơ', 'ô', 'ă', 'â'
+        // Ưu tiên đặt dấu trên các nguyên âm này
         for (int i = firstVowel; i <= lastVowel; i++) {
             char c = lower.charAt(i);
-            if (c == 'ê' || c == 'ơ' || c == 'ư' || c == 'ô') {
-                // If contains 'ươ' or 'uô', put tone on 2nd vowel (ơ or ô)
-                if (i > firstVowel && (lower.charAt(i - 1) == 'ư' || lower.charAt(i - 1) == 'u')) {
-                    return i;
-                }
-                // 'iê', 'yê'
-                if (i > firstVowel && (lower.charAt(i - 1) == 'i' || lower.charAt(i - 1) == 'y')) {
-                    return i;
-                }
+            if (c == 'ê' || c == 'ơ' || c == 'ô' || c == 'ă' || c == 'â') {
                 return i;
             }
         }
 
-        if (hasEndingConsonant) {
-            // Closed syllable (has ending consonant like c, ch, m, n, ng, nh, p, t):
-            // Place tone on the 2nd vowel in vowel group (e.g., toán, hoàng, tiến, muốn, việc, duyệt)
-            int secondVowel = -1;
-            int count = 0;
-            for (int i = firstVowel; i <= lastVowel; i++) {
-                if (isVowel(lower.charAt(i))) {
-                    count++;
-                    if (count == 2) {
-                        secondVowel = i;
-                        break;
-                    }
-                }
-            }
-            return (secondVowel != -1) ? secondVowel : firstVowel;
-        } else {
-            // Open syllable (no ending consonant):
-            // Rules:
-            // 1. "oa", "oe", "uy" -> tone on 2nd vowel (e.g. hoà/hóa, hoè/hóe, thuỷ/thúy)
-            String sub = lower.substring(firstVowel, lastVowel + 1);
-            if (sub.equals("oa") || sub.equals("oe") || sub.equals("uy")) {
+        // 5. Nếu có nguyên âm 'ưa', 'ua', 'ia' (ví dụ 'mưa', 'múa', 'mía', 'lửa')
+        if (vowelCluster.equals("ưa") || vowelCluster.equals("ua") || vowelCluster.equals("ia")) {
+            if (hasEndingConsonant) {
                 return lastVowel;
+            } else {
+                return firstVowel; // mưa, múa, mía, của, lừa
             }
-            // 2. "ia", "ua", "ưa" -> tone on 1st vowel (e.g. mía, múa, mứa, chia, của)
-            if (sub.equals("ia") || sub.equals("ua") || sub.equals("ưa")) {
-                return firstVowel;
+        }
+
+        // 6. Trường hợp có phụ âm cuối:
+        // Đặt dấu trên nguyên âm chính thứ hai (e.g. toán, hoàng, hoan, toàn, tuần, luận, biển)
+        if (hasEndingConsonant) {
+            if (vowelCount >= 2) {
+                return firstVowel + 1; // nguyên âm thứ 2
             }
-            // 3. Triphthongs like "oai", "uay", "yeu", "ieu"
-            if (vowelCount >= 3) {
-                // Return middle vowel (2nd vowel)
-                int count = 0;
-                for (int i = firstVowel; i <= lastVowel; i++) {
-                    if (isVowel(lower.charAt(i))) {
-                        count++;
-                        if (count == 2) return i;
-                    }
-                }
-            }
-            // Default for 2 vowels: 1st vowel
             return firstVowel;
         }
+
+        // 7. Trường hợp không có phụ âm cuối (âm tiết mở):
+        // - "oa", "oe", "uy" -> dấu ở nguyên âm sau (e.g. hòa, hòe, thủy, thúy, quỷ)
+        if (vowelCluster.equals("oa") || vowelCluster.equals("oe") || vowelCluster.equals("uy")) {
+            return lastVowel;
+        }
+
+        // - Cụm 3 nguyên âm mở như "oai", "uay", "oeo", "yeu", "ieu" -> đặt dấu ở nguyên âm giữa
+        if (vowelCount >= 3) {
+            return firstVowel + 1; // nguyên âm thứ 2 (ở giữa)
+        }
+
+        // Mặc định cụm 2 nguyên âm mở (e.g. ai, oi, ui, ay, ey): đặt ở nguyên âm thứ nhất (e.g. cái, nói, túi, cây)
+        return firstVowel;
     }
 
     private static boolean isVowel(char c) {

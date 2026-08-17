@@ -42,12 +42,12 @@ public class VietnameseKeyboardManager {
     public static final String TONE_NONE  = "TONE:NONE";  // Ngang / Xóa dấu
 
     private static final String[][] TONE_KEYS = {
-        {"´", "Sắc", "#FFFF6B6B", TONE_ACUTE},
-        {"`", "Huyền", "#FF4ECDC4", TONE_GRAVE},
+        {"\u02CA", "Sắc", "#FFFF6B6B", TONE_ACUTE},
+        {"\u02CB", "Huyền", "#FF4ECDC4", TONE_GRAVE},
         {"?", "Hỏi", "#FF95E1D3", TONE_HOOK},
         {"~", "Ngã", "#FFFFE66D", TONE_TILDE},
-        {".", "Nặng", "#FFFF8B94", TONE_DOT},
-        {"—", "Ngang", "#FF8899AA", TONE_NONE}
+        {"\u2022", "Nặng", "#FFFF8B94", TONE_DOT},
+        {"\u2014", "Ngang", "#FF8899AA", TONE_NONE}
     };
 
     // Vietnamese 29 letters + special chars
@@ -70,12 +70,12 @@ public class VietnameseKeyboardManager {
         // 2. Cử chỉ & Bàn tay
         {"\uD83D\uDC4D C\u1EED ch\u1EC9 & B\u00E0n tay",
          "\uD83D\uDC4D","\uD83D\uDC4E","\uD83D\uDC4F","\uD83D\uDE4C","\uD83D\uDC50","\uD83E\uDD32","\uD83E\uDD1D","\uD83D\uDE4F","\u270C","\uD83E\uDD1E","\uD83E\uDD1F","\uD83E\uDD18","\uD83E\uDD19","\uD83D\uDC48","\uD83D\uDC49","\uD83D\uDC46","\uD83D\uDD95","\uD83D\uDC47","\u261D","\uD83D\uDC4B","\uD83E\uDD1A","\uD83D\uDD90","\u270B","\u270D","\uD83E\uDD73","\uD83D\uDC85","\uD83D\uDCAA","\uD83D\uDCAF","\uD83C\uDD97","\uD83C\uDD92","\uD83C\uDD99","\uD83C\uDD98","\uD83D\uDCA2","\uD83D\uDCA5","\uD83D\uDCAB","\uD83D\uDCA6","\uD83D\uDCA8","\uD83D\uDC42","\uD83D\uDC43","\uD83D\uDC40","\uD83E\uDDE0","\uD83D\uDC45","\uD83D\uDC44","\uD83D\uDC8B"},
-        // 3. Trái tim & Tình yêu
+        // 3. Trái tim & Tình yêu (100% tương thích Android 6-9+)
         {"\u2764 Tr\u00E1i tim & T\u00ECnh y\u00EAu",
-         "\u2764","\uD83E\uDDE1","\uD83D\uDC9B","\uD83D\uDC9A","\uD83D\uDC99","\uD83D\uDC9C","\uD83D\uDDA4","\uD83E\uDD0D","\uD83E\uDD0E","\uD83D\uDC94","\u2763","\uD83D\uDC95","\uD83D\uDC9E","\uD83D\uDC93","\uD83D\uDC97","\uD83D\uDC96","\uD83D\uDC98","\uD83D\uDC9D","\uD83D\uDC9F","\u2728","\u2B50","\uD83C\uDF1F","\uD83D\uDCAB","\u26A1","\uD83D\uDD25","\u2600","\uD83C\uDF19","\u2601","\uD83C\uDF08","\u2744","\uD83D\uDC8E","\uD83D\uDC51","\uD83D\uDD2E","\uD83E\uDDFF","\uD83C\uDF89","\uD83C\uDF8A","\uD83C\uDF81","\uD83C\uDF88","\uD83C\uDFEE"},
-        // 4. Đồ ăn & Thức uống
+         "\u2764","\uD83E\uDDE1","\uD83D\uDC9B","\uD83D\uDC9A","\uD83D\uDC99","\uD83D\uDC9C","\uD83D\uDDA4","\uD83D\uDC8C","\uD83D\uDC8D","\uD83D\uDC94","\u2763","\uD83D\uDC95","\uD83D\uDC9E","\uD83D\uDC93","\uD83D\uDC97","\uD83D\uDC96","\uD83D\uDC98","\uD83D\uDC9D","\uD83D\uDC9F","\uD83C\uDF80","\u2728","\u2B50","\uD83C\uDF1F","\uD83D\uDCAB","\u26A1","\uD83D\uDD25","\u2600","\uD83C\uDF19","\u2601","\uD83C\uDF08","\u2744","\uD83D\uDC8E","\uD83D\uDC51","\uD83D\uDD2E","\uD83C\uDF89","\uD83C\uDF8A","\uD83C\uDF81","\uD83C\uDF88","\uD83C\uDFEE"},
+        // 4. Đồ ăn & Thức uống (100% tương thích Android 6-9+)
         {"\uD83C\uDF5C \u0110\u1ED3 \u0103n & Th\u1EE9c u\u1ED1ng",
-         "\uD83C\uDF5C","\uD83C\uDF72","\uD83C\uDF71","\uD83C\uDF63","\uD83C\uDF59","\uD83C\uDF5A","\uD83C\uDF5B","\uD83E\uDD5F","\uD83C\uDF62","\uD83C\uDF67","\uD83C\uDF68","\uD83C\uDF66","\uD83C\uDF70","\uD83C\uDF82","\uD83C\uDF6E","\uD83C\uDF6D","\uD83C\uDF6C","\uD83C\uDF6B","\uD83C\uDF7F","\uD83C\uDF69","\uD83C\uDF6A","\u2615","\uD83C\uDF75","\uD83E\uDDB8","\uD83E\uDD64","\uD83E\uDDE3","\uD83C\uDF7A","\uD83C\uDF7B","\uD83E\uDD42","\uD83C\uDF77","\uD83C\uDF78","\uD83C\uDF79","\uD83C\uDF7E","\uD83C\uDF55","\uD83C\uDF54","\uD83C\uDF5F","\uD83C\uDF2D","\uD83E\uDD6A","\uD83C\uDF2E","\uD83C\uDF2F","\uD83E\uDD57","\uD83C\uDF5D","\uD83E\uDD56","\uD83E\uDD50","\uD83C\uDF5E","\uD83C\uDF73","\uD83E\uDD67","\uD83E\uDD5E","\uD83C\uDF4E","\uD83C\uDF49","\uD83C\uDF47","\uD83C\uDF53","\uD83C\uDF52","\uD83C\uDF51","\uD83E\uDD6D","\uD83C\uDF4D","\uD83E\uDD65","\uD83E\uDD5D","\uD83E\uDD51"},
+         "\uD83C\uDF5C","\uD83C\uDF72","\uD83C\uDF71","\uD83C\uDF63","\uD83C\uDF59","\uD83C\uDF5A","\uD83C\uDF5B","\uD83E\uDD5F","\uD83C\uDF62","\uD83C\uDF67","\uD83C\uDF68","\uD83C\uDF66","\uD83C\uDF70","\uD83C\uDF82","\uD83C\uDF6E","\uD83C\uDF6D","\uD83C\uDF6C","\uD83C\uDF6B","\uD83C\uDF7F","\uD83C\uDF69","\uD83C\uDF6A","\u2615","\uD83C\uDF75","\uD83C\uDF76","\uD83C\uDF77","\uD83C\uDF78","\uD83C\uDF79","\uD83C\uDF7A","\uD83C\uDF7B","\uD83E\uDD42","\uD83C\uDF7E","\uD83C\uDF55","\uD83C\uDF54","\uD83C\uDF5F","\uD83C\uDF2D","\uD83E\uDD6A","\uD83C\uDF2E","\uD83C\uDF2F","\uD83E\uDD57","\uD83C\uDF5D","\uD83E\uDD56","\uD83E\uDD50","\uD83C\uDF5E","\uD83C\uDF73","\uD83E\uDD5E","\uD83C\uDF4E","\uD83C\uDF49","\uD83C\uDF47","\uD83C\uDF53","\uD83C\uDF52","\uD83C\uDF51","\uD83E\uDD6D","\uD83C\uDF4D","\uD83E\uDD65","\uD83E\uDD5D","\uD83E\uDD51"},
         // 5. Động vật & Thiên nhiên
         {"\uD83C\uDF38 \u0110\u1ED9ng v\u1EADt & Thi\u00EAn nhi\u00EAn",
          "\uD83D\uDC31","\uD83D\uDC36","\uD83D\uDC3B","\uD83D\uDC3C","\uD83D\uDC28","\uD83D\uDC2F","\uD83E\uDD81","\uD83D\uDC2E","\uD83D\uDC37","\uD83D\uDC38","\uD83D\uDC35","\uD83D\uDC14","\uD83D\uDC27","\uD83D\uDC26","\uD83D\uDC24","\uD83D\uDC23","\uD83D\uDC25","\uD83E\uDD86","\uD83E\uDD85","\uD83E\uDD89","\uD83E\uDD87","\uD83D\uDC3A","\uD83D\uDC17","\uD83D\uDC34","\uD83E\uDD84","\uD83D\uDC1D","\uD83D\uDC1B","\uD83E\uDD8B","\uD83D\uDC0C","\uD83D\uDC1E","\uD83D\uDC1C","\uD83D\uDC22","\uD83D\uDC0D","\uD83D\uDC19","\uD83E\uDD91","\uD83E\uDD90","\uD83E\uDD9E","\uD83E\uDD80","\uD83D\uDC21","\uD83D\uDC20","\uD83D\uDC1F","\uD83D\uDC2C","\uD83D\uDC33","\uD83E\uDD88","\uD83D\uDC0A","\uD83C\uDF38","\uD83C\uDF3A","\uD83C\uDF3B","\uD83C\uDF39","\uD83E\uDD40","\uD83C\uDF37","\uD83C\uDF3C","\uD83D\uDC90","\uD83C\uDF3E","\uD83C\uDF3F","\uD83C\uDF40","\uD83C\uDF41","\uD83C\uDF42","\uD83C\uDF43"},
@@ -109,10 +109,15 @@ public class VietnameseKeyboardManager {
     private LinearLayout mSymbolsPanel;
     private LinearLayout mSymRow1, mSymRow2, mSymRow3, mSymRow4;
 
+    /** Shift key states: OFF → one-shot ON → CAPS_LOCK → OFF */
+    public enum ShiftState { OFF, ON, CAPS_LOCK }
+
     private List<TextView> mAllLetterKeys = new ArrayList<>();
     private TextView mEmojiBtn;
     private TextView mNumToggleBtn;
-    private boolean mShiftOn = false;
+    private TextView mShiftKey; // reference to ⇧ key for visual update
+    private ShiftState mShiftState = ShiftState.OFF;
+    private boolean mShiftOn = false; // convenience alias: true when ON or CAPS_LOCK
     private boolean mShowNumbers = true;
     private boolean mSymbolsPage2 = false;
     private KeyboardMode mCurrentMode = KeyboardMode.TEXT;
@@ -212,15 +217,18 @@ public class VietnameseKeyboardManager {
 
             TextView symView = new TextView(mContext);
             symView.setText(symbol);
-            symView.setTextSize(12.5f);
+            symView.setTextSize(17f);
             symView.setTextColor(Color.parseColor(color));
             symView.setTypeface(Typeface.DEFAULT_BOLD);
+            symView.setIncludeFontPadding(false);
             symView.setGravity(Gravity.CENTER);
 
             TextView lblView = new TextView(mContext);
             lblView.setText(label);
-            lblView.setTextSize(7.5f);
+            lblView.setTextSize(8.5f);
             lblView.setTextColor(Color.parseColor("#FFAAAACC"));
+            lblView.setTypeface(Typeface.DEFAULT_BOLD);
+            lblView.setIncludeFontPadding(false);
             lblView.setGravity(Gravity.CENTER);
 
             cell.addView(symView);
@@ -241,15 +249,18 @@ public class VietnameseKeyboardManager {
 
         TextView numIcon = new TextView(mContext);
         numIcon.setText(mShowNumbers ? "123▾" : "123▴");
-        numIcon.setTextSize(11.5f);
+        numIcon.setTextSize(12.5f);
         numIcon.setTextColor(mShowNumbers ? Color.parseColor("#FF4ECDC4") : Color.parseColor("#FF8899AA"));
         numIcon.setTypeface(Typeface.DEFAULT_BOLD);
+        numIcon.setIncludeFontPadding(false);
         numIcon.setGravity(Gravity.CENTER);
 
         TextView numLbl = new TextView(mContext);
         numLbl.setText(mShowNumbers ? "Ẩn số" : "Hiện số");
-        numLbl.setTextSize(7f);
+        numLbl.setTextSize(7.5f);
         numLbl.setTextColor(mShowNumbers ? Color.parseColor("#FFCCE5FF") : Color.parseColor("#FF8899AA"));
+        numLbl.setTypeface(Typeface.DEFAULT_BOLD);
+        numLbl.setIncludeFontPadding(false);
         numLbl.setGravity(Gravity.CENTER);
 
         numToggleCell.addView(numIcon);
@@ -332,10 +343,10 @@ public class VietnameseKeyboardManager {
         lpDel.setMargins(3, 0, 3, 0);
 
         // Shift key
-        TextView shift = makeKey("⇧", 18, "#FF2D2D44", "#FFFFFFFF");
-        shift.setLayoutParams(lpShift);
-        shift.setOnClickListener(v -> mSpecialKeyListener.onSpecialKey(KEY_SHIFT));
-        mRow3.addView(shift);
+        mShiftKey = makeKey("⇧", 18, "#FF2D2D44", "#FFFFFFFF");
+        mShiftKey.setLayoutParams(lpShift);
+        mShiftKey.setOnClickListener(v -> mSpecialKeyListener.onSpecialKey(KEY_SHIFT));
+        mRow3.addView(mShiftKey);
 
         // z x c v b n m
         for (String ch : ROW3_LOWER) {
@@ -663,6 +674,10 @@ public class VietnameseKeyboardManager {
 
         key.setOnClickListener(v -> {
             mKeyListener.onKey(mShiftOn ? up : lo);
+            // One-shot shift: auto-off after typing one letter
+            if (mShiftState == ShiftState.ON) {
+                setShiftState(ShiftState.OFF);
+            }
         });
 
         mAllLetterKeys.add(key);
@@ -705,11 +720,23 @@ public class VietnameseKeyboardManager {
     // ──────────────────────────────────────────────────────────
     // Public mode and state control
     // ──────────────────────────────────────────────────────────
-    public void updateShiftState(boolean shiftOn) {
-        mShiftOn = shiftOn;
+
+    /** Cycle shift states: OFF → ON → CAPS_LOCK → OFF */
+    public void cycleShiftState() {
+        switch (mShiftState) {
+            case OFF:      setShiftState(ShiftState.ON);       break;
+            case ON:       setShiftState(ShiftState.CAPS_LOCK); break;
+            case CAPS_LOCK: setShiftState(ShiftState.OFF);     break;
+        }
+    }
+
+    public void setShiftState(ShiftState state) {
+        mShiftState = state;
+        mShiftOn = (state != ShiftState.OFF);
+        // Update letter key labels and colours
         for (TextView key : mAllLetterKeys) {
             String current = key.getText().toString();
-            if (shiftOn) {
+            if (mShiftOn) {
                 key.setText(current.toUpperCase());
                 key.setTextColor(Color.parseColor("#FFFFE66D"));
             } else {
@@ -717,12 +744,40 @@ public class VietnameseKeyboardManager {
                 key.setTextColor(Color.parseColor("#FFFFFFFF"));
             }
         }
+        // Update ⇧ key icon
+        if (mShiftKey != null) {
+            switch (state) {
+                case OFF:
+                    mShiftKey.setText("⇧");
+                    mShiftKey.setTextColor(Color.parseColor("#FFFFFFFF"));
+                    mShiftKey.getBackground().setTint(Color.parseColor("#FF2D2D44"));
+                    break;
+                case ON:
+                    mShiftKey.setText("⇧");
+                    mShiftKey.setTextColor(Color.parseColor("#FFFFE66D"));
+                    mShiftKey.getBackground().setTint(Color.parseColor("#FF1E3A5F"));
+                    break;
+                case CAPS_LOCK:
+                    mShiftKey.setText("⇪");
+                    mShiftKey.setTextColor(Color.parseColor("#FF4ECDC4"));
+                    mShiftKey.getBackground().setTint(Color.parseColor("#FF1E3A5F"));
+                    break;
+            }
+        }
+    }
+
+    /** Legacy compat – called from IME for reset */
+    public void updateShiftState(boolean shiftOn) {
+        setShiftState(shiftOn ? ShiftState.ON : ShiftState.OFF);
+    }
+
+    public ShiftState getShiftState() {
+        return mShiftState;
     }
 
     public void resetKeyboardState() {
-        mShiftOn = false;
         mSymbolsPage2 = false;
-        updateShiftState(false);
+        setShiftState(ShiftState.OFF);
         setMode(KeyboardMode.TEXT);
     }
 

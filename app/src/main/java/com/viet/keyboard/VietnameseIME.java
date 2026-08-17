@@ -54,11 +54,8 @@ public class VietnameseIME extends InputMethodService {
 
         // Direct commit for text (ensures cursor stays exactly at current editing position)
         ic.commitText(text, 1);
-
-        if (mShiftOn) {
-            mShiftOn = false;
-            mKeyboardManager.updateShiftState(false);
-        }
+        // NOTE: shift auto-off after letter is handled inside makeLetterKey (VietnameseKeyboardManager)
+        // Tone-bar presses do NOT turn off shift here
     }
 
     private void handleToneAction(String toneAction, InputConnection ic) {
@@ -157,8 +154,8 @@ public class VietnameseIME extends InputMethodService {
                 break;
 
             case VietnameseKeyboardManager.KEY_SHIFT:
-                mShiftOn = !mShiftOn;
-                mKeyboardManager.updateShiftState(mShiftOn);
+                mKeyboardManager.cycleShiftState();
+                mShiftOn = (mKeyboardManager.getShiftState() != VietnameseKeyboardManager.ShiftState.OFF);
                 break;
 
             case VietnameseKeyboardManager.KEY_TOGGLE_NUMBERS:
