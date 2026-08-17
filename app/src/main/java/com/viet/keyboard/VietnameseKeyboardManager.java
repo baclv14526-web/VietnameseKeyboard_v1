@@ -55,33 +55,33 @@ public class VietnameseKeyboardManager {
     private static final String[] ROW2_LOWER = {"a","s","d","f","g","h","j","k","l"};
     private static final String[] ROW3_LOWER = {"z","x","c","v","b","n","m"};
 
-    // Vietnamese special characters - extra letters
-    private static final String[] VN_EXTRA_LOWER = {"ă","â","đ","ê","ô","ơ","ư"};
-    private static final String[] VN_EXTRA_UPPER = {"Ă","Â","Đ","Ê","Ô","Ơ","Ư"};
+    // Vietnamese special characters - extra letters (ă, â, ê, ô, ơ, ư, đ)
+    private static final String[] VN_EXTRA_LOWER = {"ă","â","ê","ô","ơ","ư","đ"};
+    private static final String[] VN_EXTRA_UPPER = {"Ă","Â","Ê","Ô","Ơ","Ư","Đ"};
 
     // Number row
     private static final String[] NUMBERS = {"1","2","3","4","5","6","7","8","9","0"};
 
-    // Emoji Categories and Full Popular Emoji List
+    // Emoji Categories and Full Popular Emoji List (Standard Unicode supported across all Android versions)
     private static final String[][] EMOJI_CATEGORIES = {
         // 1. Mặt cười & Cảm xúc
         {"😊 Mặt cười & Cảm xúc",
-         "😊","😍","🥰","😘","😂","🤣","😅","😆","🥹","😁","😄","😃","😀","😋","😎","🥳","🤩","😜","🤪","🤗","🤔","🤫","🫡","🫠","😴","🤤","😷","🤒","🤧","🥺","😢","😭","😤","😠","😡","🤬","🤯","😳","🥵","🥶","😱","😨","😰","😥","😓","🫣","🫢","😏","🙄","😬","😌","😔","😪","😵","😵‍💫","🤠","👻","🤡","💩"},
+         "😊","😍","🥰","😘","😂","🤣","😅","😆","🥹","😁","😄","😃","😀","😋","😎","🥳","🤩","😜","🤪","🤗","🤔","🤫","🫡","😴","🤤","😷","🤒","🤧","🥺","😢","😭","😤","😠","😡","🤬","🤯","😳","🥵","🥶","😱","😨","😰","😥","😓","😏","🙄","😬","😌","😔","😪","😵","🤠","👻","🤡","💩","😈","💀","👽","🤖"},
         // 2. Cử chỉ & Bàn tay
         {"👍 Cử chỉ & Bàn tay",
-         "👍","👎","👏","🙌","👐","🤲","🤝","🙏","✌️","🤞","🫰","🤟","🤘","🤙","👈","👉","👆","🖕","👇","☝️","👋","🤚","🖐️","✋","🖖","✍️","🤳","💅","💪","🫶","❤️‍🔥","💯","🆗","🆒","🆙","🆘","💢","💥","💫","💦","💨","🕳️"},
+         "👍","👎","👏","🙌","👐","🤲","🤝","🙏","✌️","🤞","🤟","🤘","🤙","👈","👉","👆","🖕","👇","☝️","👋","🤚","🖐️","✋","✍️","🤳","💅","💪","🫶","💯","🆗","🆒","🆙","🆘","💢","💥","💫","💦","💨","👂","👃","👀","👁️","🧠","👅","👄","💋"},
         // 3. Trái tim & Tình yêu
         {"❤️ Trái tim & Tình yêu",
-         "❤️","🧡","💛","💚","💙","💜","🖤","🤍","🤎","💔","❤️‍🔥","❤️‍🩹","❣️","💕","💞","💓","💗","💖","💘","💝","💟","✨","⭐","🌟","💫","⚡","🔥","☀️","🌙","☁️","🌧️","❄️","🌈","💎","👑","🔮","🧿"},
+         "❤️","🧡","💛","💚","💙","💜","🖤","🤍","🤎","💔","❣️","💕","💞","💓","💗","💖","💘","💝","💟","✨","⭐","🌟","💫","⚡","🔥","☀️","🌙","☁️","🌧️","❄️","🌈","💎","👑","🔮","🧿","🎉","🎊","🎁","🎈","🏮"},
         // 4. Đồ ăn & Thức uống
         {"🍜 Đồ ăn & Thức uống",
-         "🍜","🍲","🍱","🍣","🍙","🍚","🍛","🥟","🍢","🍧","🍨","🍦","🍰","🎂","🍮","🍭","🍬","🍫","🍿","🍩","🍪","☕","🍵","🧋","🥤","🧃","🍺","🍻","🥂","🍷","🍕","🍔","🍟","🌭","🥪","🌮","🌯","🥗","🍝","🥖","🥐","🍞","🍳","🧇","🥞","🍎","🍉","🍇","🍓","🍒","🍑","🥭","🍍","🥥","🥝","🥑"},
+         "🍜","🍲","🍱","🍣","🍙","🍚","🍛","🥟","🍢","🍧","🍨","🍦","🍰","🎂","🍮","🍭","🍬","🍫","🍿","🍩","🍪","☕","🍵","🧋","🥤","🧃","🍺","🍻","🥂","🍷","🍸","🍹","🍾","🍕","🍔","🍟","🌭","🥪","🌮","🌯","🥗","🍝","🥖","🥐","🍞","🍳","🧇","🥞","🍎","🍉","🍇","🍓","🍒","🍑","🥭","🍍","🥥","🥝","🥑"},
         // 5. Động vật & Thiên nhiên
         {"🌸 Động vật & Thiên nhiên",
-         "🐱","🐶","🐻","🐼","🐨","🐯","🦁","🐮","🐷","🐸","🐵","🐔","🐧","🐦","🦆","🦅","🦉","🦇","🐺","🐗","🐴","🦄","🐝","🐛","🦋","🐌","🐞","🐜","🐢","🐍","🐙","🦑","🦐","🦞","🦀","🐡","🐠","🐟","🐬","🐳","🌸","🌺","🌻","🌹","🥀","🌷","🌼","💐","🌾","🌿","🍀","🍁","🍂","🍃"},
+         "🐱","🐶","🐻","🐼","🐨","🐯","🦁","🐮","🐷","🐸","🐵","🐔","🐧","🐦","🐤","🐣","🐥","🦆","🦅","🦉","🦇","🐺","🐗","🐴","🦄","🐝","🐛","🦋","🐌","🐞","🐜","🐢","🐍","🐙","🦑","🦐","🦞","🦀","🐡","🐠","🐟","🐬","🐳","🦈","🐊","🌸","🌺","🌻","🌹","🥀","🌷","🌼","💐","🌾","🌿","🍀","🍁","🍂","🍃"},
         // 6. Hoạt động & Du lịch
         {"⚽ Hoạt động & Du lịch",
-         "⚽","🏀","🏈","⚾","🥎","🎾","🏐","🏉","🥏","🎱","🪀","🏓","🏸","🏒","⛳","🎯","🎮","🕹️","🎲","🧩","🎨","🎬","🎤","🎧","🎼","🎹","🥁","🎷","🎺","🎸","🪕","🚗","🚕","🚙","🚌","🚎","🏎️","🚓","🚑","🚒","🚐","🛻","🚚","🚛","🚜","🛵","🏍️","🚲","🛴","✈️","🚀","🛸","🚢","⚓","🏖️","🏝️","🏕️","⛺"}
+         "⚽","🏀","🏈","⚾","🥎","🎾","🏐","🏉","🥏","🎱","🪀","🏓","🏸","🏒","⛳","🎯","🎮","🎲","🧩","🎨","🎬","🎤","🎧","🎼","🎹","🥁","🎷","🎺","🎸","🚗","🚕","🚙","🚌","🚎","🏎️","🚓","🚑","🚒","🚐","🛻","🚚","🚛","🚜","🛵","🏍️","🚲","🛴","✈️","🚀","🛸","🚢","⚓","🏖️","🏝️","🏕️","⛺","🏠","🏡","🏢"}
     };
 
     // Symbols and Numbers layouts (Samsung keyboard style)
@@ -187,39 +187,16 @@ public class VietnameseKeyboardManager {
     // ──────────────────────────────────────────────────────────
     // Tone row (dấu thanh) + Number row toggle button
     // ──────────────────────────────────────────────────────────
+    // ──────────────────────────────────────────────────────────
+    // Tone row (dấu thanh) + Number row toggle button on right
+    // ──────────────────────────────────────────────────────────
     private void buildToneRow() {
         mToneRow.removeAllViews();
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0,
                 LinearLayout.LayoutParams.MATCH_PARENT, 1f);
         lp.setMargins(3, 0, 3, 0);
 
-        // Nút toggle ẩn/hiện dãy số (1-9, 0)
-        LinearLayout numToggleCell = new LinearLayout(mContext);
-        numToggleCell.setLayoutParams(lp);
-        numToggleCell.setOrientation(LinearLayout.VERTICAL);
-        numToggleCell.setGravity(Gravity.CENTER);
-        numToggleCell.setBackgroundResource(R.drawable.key_bg_rounded);
-        numToggleCell.getBackground().setTint(mShowNumbers ? Color.parseColor("#FF1E3A5F") : Color.parseColor("#FF16213E"));
-
-        TextView numIcon = new TextView(mContext);
-        numIcon.setText(mShowNumbers ? "123▾" : "123▴");
-        numIcon.setTextSize(11.5f);
-        numIcon.setTextColor(mShowNumbers ? Color.parseColor("#FF4ECDC4") : Color.parseColor("#FF8899AA"));
-        numIcon.setTypeface(Typeface.DEFAULT_BOLD);
-        numIcon.setGravity(Gravity.CENTER);
-
-        TextView numLbl = new TextView(mContext);
-        numLbl.setText(mShowNumbers ? "Ẩn số" : "Hiện số");
-        numLbl.setTextSize(7f);
-        numLbl.setTextColor(mShowNumbers ? Color.parseColor("#FFCCE5FF") : Color.parseColor("#FF8899AA"));
-        numLbl.setGravity(Gravity.CENTER);
-
-        numToggleCell.addView(numIcon);
-        numToggleCell.addView(numLbl);
-        numToggleCell.setOnClickListener(v -> toggleNumberRow(!mShowNumbers));
-        mToneRow.addView(numToggleCell);
-
-        // Các phím dấu thanh (font chữ thu nhỏ gọn gàng, tinh tế)
+        // 1. Các phím dấu thanh: Sắc, Huyền, Hỏi, Ngã, Nặng, Ngang
         for (String[] tone : TONE_KEYS) {
             String symbol = tone[0];
             String label  = tone[1];
@@ -253,10 +230,36 @@ public class VietnameseKeyboardManager {
             cell.setOnClickListener(v -> mKeyListener.onKey(action));
             mToneRow.addView(cell);
         }
+
+        // 2. Nút toggle ẩn/hiện dãy số (1-9, 0) ở bên phải
+        LinearLayout numToggleCell = new LinearLayout(mContext);
+        numToggleCell.setLayoutParams(lp);
+        numToggleCell.setOrientation(LinearLayout.VERTICAL);
+        numToggleCell.setGravity(Gravity.CENTER);
+        numToggleCell.setBackgroundResource(R.drawable.key_bg_rounded);
+        numToggleCell.getBackground().setTint(mShowNumbers ? Color.parseColor("#FF1E3A5F") : Color.parseColor("#FF16213E"));
+
+        TextView numIcon = new TextView(mContext);
+        numIcon.setText(mShowNumbers ? "123▾" : "123▴");
+        numIcon.setTextSize(11.5f);
+        numIcon.setTextColor(mShowNumbers ? Color.parseColor("#FF4ECDC4") : Color.parseColor("#FF8899AA"));
+        numIcon.setTypeface(Typeface.DEFAULT_BOLD);
+        numIcon.setGravity(Gravity.CENTER);
+
+        TextView numLbl = new TextView(mContext);
+        numLbl.setText(mShowNumbers ? "Ẩn số" : "Hiện số");
+        numLbl.setTextSize(7f);
+        numLbl.setTextColor(mShowNumbers ? Color.parseColor("#FFCCE5FF") : Color.parseColor("#FF8899AA"));
+        numLbl.setGravity(Gravity.CENTER);
+
+        numToggleCell.addView(numIcon);
+        numToggleCell.addView(numLbl);
+        numToggleCell.setOnClickListener(v -> toggleNumberRow(!mShowNumbers));
+        mToneRow.addView(numToggleCell);
     }
 
     // ──────────────────────────────────────────────────────────
-    // Vietnamese extra letters row: ă, â, đ, ê, ô, ơ, ư
+    // Vietnamese extra letters row: ă, â, ê, ô, ơ, ư, đ
     // ──────────────────────────────────────────────────────────
     private void buildVnExtraRow() {
         if (mVnRow == null) return;
@@ -268,7 +271,6 @@ public class VietnameseKeyboardManager {
         for (String vnChar : VN_EXTRA_LOWER) {
             TextView key = makeLetterKey(vnChar);
             key.setLayoutParams(lp);
-            key.getBackground().setTint(Color.parseColor("#FF202C45"));
             mVnRow.addView(key);
         }
     }
@@ -552,20 +554,20 @@ public class VietnameseKeyboardManager {
         if (mEmojiContainer == null) return;
         mEmojiContainer.removeAllViews();
 
-        int marginPx = (int) (2 * mContext.getResources().getDisplayMetrics().density);
-        int padPx = (int) (4 * mContext.getResources().getDisplayMetrics().density);
-        int heightPx = (int) (42 * mContext.getResources().getDisplayMetrics().density);
+        int marginPx = (int) (3 * mContext.getResources().getDisplayMetrics().density);
+        int padPx = (int) (6 * mContext.getResources().getDisplayMetrics().density);
+        int heightPx = (int) (46 * mContext.getResources().getDisplayMetrics().density);
 
         for (String[] cat : EMOJI_CATEGORIES) {
             String title = cat[0];
 
-            // Category Title
+            // Category Title Badge
             TextView titleView = new TextView(mContext);
             titleView.setText(title);
             titleView.setTextSize(12f);
             titleView.setTextColor(Color.parseColor("#FF4ECDC4"));
             titleView.setTypeface(Typeface.DEFAULT_BOLD);
-            titleView.setPadding(padPx * 2, padPx * 2, padPx * 2, padPx);
+            titleView.setPadding(padPx * 2, padPx, padPx * 2, padPx);
             mEmojiContainer.addView(titleView);
 
             // Group emojis into rows of 7 columns
@@ -587,10 +589,13 @@ public class VietnameseKeyboardManager {
 
                 TextView ev = new TextView(mContext);
                 ev.setText(emoji);
-                ev.setTextSize(22f);
+                ev.setTextSize(24f);
+                ev.setIncludeFontPadding(false);
+                ev.setSingleLine(true);
                 ev.setGravity(Gravity.CENTER);
                 ev.setBackgroundResource(R.drawable.key_bg_rounded);
-                ev.getBackground().setTint(Color.parseColor("#FF16213E"));
+                // Nền xám xanh slate tinh tế làm nổi bật mọi sắc màu emoji
+                ev.getBackground().setTint(Color.parseColor("#FF282B42"));
 
                 LinearLayout.LayoutParams itemLp = new LinearLayout.LayoutParams(0,
                         LinearLayout.LayoutParams.MATCH_PARENT, 1f);
@@ -603,11 +608,11 @@ public class VietnameseKeyboardManager {
                     switch (event.getAction()) {
                         case android.view.MotionEvent.ACTION_DOWN:
                             ev.getBackground().setTint(Color.parseColor("#FFE94560"));
-                            ev.animate().scaleX(0.9f).scaleY(0.9f).setDuration(60).start();
+                            ev.animate().scaleX(0.88f).scaleY(0.88f).setDuration(60).start();
                             break;
                         case android.view.MotionEvent.ACTION_UP:
                         case android.view.MotionEvent.ACTION_CANCEL:
-                            ev.getBackground().setTint(Color.parseColor("#FF16213E"));
+                            ev.getBackground().setTint(Color.parseColor("#FF282B42"));
                             ev.animate().scaleX(1f).scaleY(1f).setDuration(60).start();
                             break;
                     }
@@ -712,6 +717,13 @@ public class VietnameseKeyboardManager {
                 key.setTextColor(Color.parseColor("#FFFFFFFF"));
             }
         }
+    }
+
+    public void resetKeyboardState() {
+        mShiftOn = false;
+        mSymbolsPage2 = false;
+        updateShiftState(false);
+        setMode(KeyboardMode.TEXT);
     }
 
     public KeyboardMode getCurrentMode() {

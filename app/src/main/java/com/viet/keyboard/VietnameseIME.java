@@ -24,6 +24,24 @@ public class VietnameseIME extends InputMethodService {
         return mKeyboardView;
     }
 
+    @Override
+    public void onStartInputView(EditorInfo info, boolean restarting) {
+        super.onStartInputView(info, restarting);
+        if (mKeyboardManager != null) {
+            mShiftOn = false;
+            mKeyboardManager.resetKeyboardState();
+        }
+    }
+
+    @Override
+    public void onFinishInputView(boolean finishingInput) {
+        super.onFinishInputView(finishingInput);
+        if (mKeyboardManager != null) {
+            mShiftOn = false;
+            mKeyboardManager.resetKeyboardState();
+        }
+    }
+
     private void onKeyPressed(String text) {
         InputConnection ic = getCurrentInputConnection();
         if (ic == null || text == null || text.isEmpty()) return;
@@ -83,12 +101,12 @@ public class VietnameseIME extends InputMethodService {
 
         switch (keyCode) {
             case VietnameseKeyboardManager.KEY_DELETE:
-                // Delete single char at current cursor position or delete selection
+                // Delete single char / emoji at current cursor position or delete selection
                 CharSequence selected = ic.getSelectedText(0);
                 if (selected != null && selected.length() > 0) {
                     ic.commitText("", 1);
                 } else {
-                    ic.deleteSurroundingText(1, 0);
+                    deleteSingleCharOrEmoji(ic);
                 }
                 break;
 
@@ -151,5 +169,33 @@ public class VietnameseIME extends InputMethodService {
                 mKeyboardManager.toggleEmoji();
                 break;
         }
+    }
+
+    private void deleteSingleCharOrEmoji(InputConnection ic) {
+        CharSequence before = ic.getTextBeforeCursor(4, 0);
+        if (before == null || before.length() == 0) {
+            ic.deleteSurroundingText(1, 0);
+            return;
+        }
+
+        int len = before.length();
+        char lastChar = before.charAt(len - 1);
+        int deleteCount = 1;
+
+        // Xử lý Emoji có Variation Selector (ví dụ \uFE0F hoặc \uFE0E)
+        if ((lastChar == '\uFE0F' || lastChar == '\uFE0E') && len >= 2) {
+            char prevChar = before.charAt(len - 2);
+            if (Character.isLowSurrogate(prevChar) && len >= 3 && Character.isHighSurrogate(before.charAt(len - 3))) {
+                deleteCount = 3;
+            } else {
+                deleteCount = 2;
+            }
+        }
+        // Xử lý Emoji chuẩn Surrogate Pair (2 code units UTF-16)
+        else if (Character.isLowSurrogate(lastChar) && len >= 2 && Character.isHighSurrogate(before.charAt(len - 2))) {
+            deleteCount = 2;
+        }
+
+        ic.deleteSurroundingText(deleteCount, 0);
     }
 }
