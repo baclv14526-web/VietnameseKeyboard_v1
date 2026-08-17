@@ -5,8 +5,10 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.HorizontalScrollView;
+import android.os.Handler;
+import android.os.Looper;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -14,13 +16,22 @@ import java.util.List;
 
 public class VietnameseKeyboardManager {
 
+    // Keyboard mode enum to strictly prevent UI conflicts / duplication
+    public enum KeyboardMode {
+        TEXT,
+        SYMBOLS,
+        EMOJI
+    }
+
     // Special key codes
-    public static final int KEY_DELETE        = -1;
-    public static final int KEY_SPACE         = -2;
-    public static final int KEY_ENTER         = -3;
-    public static final int KEY_SHIFT         = -4;
-    public static final int KEY_TOGGLE_NUMBERS = -5;
-    public static final int KEY_TOGGLE_EMOJI   = -6;
+    public static final int KEY_DELETE         = -1;
+    public static final int KEY_SPACE          = -2;
+    public static final int KEY_ENTER          = -3;
+    public static final int KEY_SHIFT          = -4;
+    public static final int KEY_TOGGLE_NUMBERS  = -5;
+    public static final int KEY_TOGGLE_EMOJI    = -6;
+    public static final int KEY_DELETE_WORD     = -7;
+    public static final int KEY_DELETE_ALL      = -8;
 
     // Vietnamese tones
     public static final String TONE_ACUTE = "TONE:ACUTE"; // Sắc
@@ -51,22 +62,26 @@ public class VietnameseKeyboardManager {
     // Number row
     private static final String[] NUMBERS = {"1","2","3","4","5","6","7","8","9","0"};
 
-    // Emoji categories
-    private static final String[][] EMOJI_ROWS = {
-        // Happy & Love
-        {"😊","😍","🥰","😘","😂","🤣","😅","😆","🥹","😁","😄","😃","😀","😋","😎"},
-        // Sad & Emotions
-        {"😢","😭","😤","😠","🥺","😩","😫","🥴","😵","🤯","😱","😨","😰","😓","😔"},
-        // Nature & Animals
-        {"🌸","🌺","🌻","🌹","🌷","🍀","🌈","⭐","🌙","☀️","🐱","🐶","🐻","🦋","🐝"},
-        // Food & Drinks
-        {"🍜","🍣","🍕","🍔","🍦","🍰","🎂","☕","🧋","🍵","🍱","🥗","🍇","🍓","🍑"},
-        // Hearts & Symbols
-        {"❤️","🧡","💛","💚","💙","💜","🤍","🖤","💖","💗","💓","💞","💕","💝","✨"},
-        // Activities & Objects
-        {"🎵","🎶","🎸","🎮","⚽","🏀","🎯","🎁","🎉","🎊","🔥","💫","⚡","🌊","🎀"},
-        // Vietnamese / Chat specific
-        {"👍","👎","👏","🙌","✌️","🤞","💪","🤙","👋","🤝","🫶","❤️‍🔥","😤","💯","🆗"}
+    // Emoji Categories and Full Popular Emoji List
+    private static final String[][] EMOJI_CATEGORIES = {
+        // 1. Mặt cười & Cảm xúc
+        {"😊 Mặt cười & Cảm xúc",
+         "😊","😍","🥰","😘","😂","🤣","😅","😆","🥹","😁","😄","😃","😀","😋","😎","🥳","🤩","😜","🤪","🤗","🤔","🤫","🫡","🫠","😴","🤤","😷","🤒","🤧","🥺","😢","😭","😤","😠","😡","🤬","🤯","😳","🥵","🥶","😱","😨","😰","😥","😓","🫣","🫢","😏","🙄","😬","😌","😔","😪","😵","😵‍💫","🤠","👻","🤡","💩"},
+        // 2. Cử chỉ & Bàn tay
+        {"👍 Cử chỉ & Bàn tay",
+         "👍","👎","👏","🙌","👐","🤲","🤝","🙏","✌️","🤞","🫰","🤟","🤘","🤙","👈","👉","👆","🖕","👇","☝️","👋","🤚","🖐️","✋","🖖","✍️","🤳","💅","💪","🫶","❤️‍🔥","💯","🆗","🆒","🆙","🆘","💢","💥","💫","💦","💨","🕳️"},
+        // 3. Trái tim & Tình yêu
+        {"❤️ Trái tim & Tình yêu",
+         "❤️","🧡","💛","💚","💙","💜","🖤","🤍","🤎","💔","❤️‍🔥","❤️‍🩹","❣️","💕","💞","💓","💗","💖","💘","💝","💟","✨","⭐","🌟","💫","⚡","🔥","☀️","🌙","☁️","🌧️","❄️","🌈","💎","👑","🔮","🧿"},
+        // 4. Đồ ăn & Thức uống
+        {"🍜 Đồ ăn & Thức uống",
+         "🍜","🍲","🍱","🍣","🍙","🍚","🍛","🥟","🍢","🍧","🍨","🍦","🍰","🎂","🍮","🍭","🍬","🍫","🍿","🍩","🍪","☕","🍵","🧋","🥤","🧃","🍺","🍻","🥂","🍷","🍕","🍔","🍟","🌭","🥪","🌮","🌯","🥗","🍝","🥖","🥐","🍞","🍳","🧇","🥞","🍎","🍉","🍇","🍓","🍒","🍑","🥭","🍍","🥥","🥝","🥑"},
+        // 5. Động vật & Thiên nhiên
+        {"🌸 Động vật & Thiên nhiên",
+         "🐱","🐶","🐻","🐼","🐨","🐯","🦁","🐮","🐷","🐸","🐵","🐔","🐧","🐦","🦆","🦅","🦉","🦇","🐺","🐗","🐴","🦄","🐝","🐛","🦋","🐌","🐞","🐜","🐢","🐍","🐙","🦑","🦐","🦞","🦀","🐡","🐠","🐟","🐬","🐳","🌸","🌺","🌻","🌹","🥀","🌷","🌼","💐","🌾","🌿","🍀","🍁","🍂","🍃"},
+        // 6. Hoạt động & Du lịch
+        {"⚽ Hoạt động & Du lịch",
+         "⚽","🏀","🏈","⚾","🥎","🎾","🏐","🏉","🥏","🎱","🪀","🏓","🏸","🏒","⛳","🎯","🎮","🕹️","🎲","🧩","🎨","🎬","🎤","🎧","🎼","🎹","🥁","🎷","🎺","🎸","🪕","🚗","🚕","🚙","🚌","🚎","🏎️","🚓","🚑","🚒","🚐","🛻","🚚","🚛","🚜","🛵","🏍️","🚲","🛴","✈️","🚀","🛸","🚢","⚓","🏖️","🏝️","🏕️","⛺"}
     };
 
     // Symbols and Numbers layouts (Samsung keyboard style)
@@ -90,7 +105,7 @@ public class VietnameseKeyboardManager {
     private LinearLayout mVnRow;
     private LinearLayout mRow1, mRow2, mRow3, mRowBottom;
     private LinearLayout mEmojiContainer;
-    private HorizontalScrollView mEmojiPanel;
+    private ScrollView mEmojiPanel;
     private LinearLayout mSymbolsPanel;
     private LinearLayout mSymRow1, mSymRow2, mSymRow3, mSymRow4;
 
@@ -99,8 +114,8 @@ public class VietnameseKeyboardManager {
     private TextView mNumToggleBtn;
     private boolean mShiftOn = false;
     private boolean mShowNumbers = true;
-    private boolean mSymbolsOn = false;
     private boolean mSymbolsPage2 = false;
+    private KeyboardMode mCurrentMode = KeyboardMode.TEXT;
 
     public interface OnKeyListener {
         void onKey(String text);
@@ -149,9 +164,7 @@ public class VietnameseKeyboardManager {
         buildEmojiPanel();
         buildSymbolsPanel();
 
-        if (!showNumbers) {
-            mNumberRow.setVisibility(View.GONE);
-        }
+        setMode(KeyboardMode.TEXT);
     }
 
     // ──────────────────────────────────────────────────────────
@@ -302,17 +315,10 @@ public class VietnameseKeyboardManager {
             mRow3.addView(key);
         }
 
-        // Backspace
+        // Backspace key
         TextView del = makeKey("⌫", 18, "#FF2D2D44", "#FFFF6B6B");
         del.setLayoutParams(lpDel);
-        del.setOnClickListener(v -> mSpecialKeyListener.onSpecialKey(KEY_DELETE));
-        // Long press = delete word
-        del.setOnLongClickListener(v -> {
-            for (int i = 0; i < 5; i++) {
-                mSpecialKeyListener.onSpecialKey(KEY_DELETE);
-            }
-            return true;
-        });
+        setupDeleteKey(del);
         mRow3.addView(del);
     }
 
@@ -441,50 +447,117 @@ public class VietnameseKeyboardManager {
 
         TextView del = makeKey("⌫", 18, "#FF2D2D44", "#FFFF6B6B");
         del.setLayoutParams(lpSpecial);
-        del.setOnClickListener(v -> mSpecialKeyListener.onSpecialKey(KEY_DELETE));
-        del.setOnLongClickListener(v -> {
-            for (int i = 0; i < 5; i++) {
-                mSpecialKeyListener.onSpecialKey(KEY_DELETE);
-            }
-            return true;
-        });
+        setupDeleteKey(del);
         mSymRow4.addView(del);
     }
 
     // ──────────────────────────────────────────────────────────
-    // Emoji Panel – 7 rows of emojis in horizontal scroll
+    // Delete key behavior:
+    // - Tap: Delete 1 character
+    // - Hold >400ms: Delete whole word iteratively
+    // - Hold >3000ms: Delete all text in input
     // ──────────────────────────────────────────────────────────
-    private void buildEmojiPanel() {
-        mEmojiContainer.removeAllViews();
+    private void setupDeleteKey(TextView del) {
+        Handler deleteHandler = new Handler(Looper.getMainLooper());
 
-        String[] categoryLabels = {
-            "😊 Vui vẻ", "😢 Cảm xúc", "🌸 Thiên nhiên",
-            "🍜 Đồ ăn", "❤️ Trái tim", "🎵 Hoạt động", "👍 Chat"
+        class DeleteState {
+            long startTime = 0;
+            boolean isLongPressing = false;
+            boolean deletedAll = false;
+        }
+
+        final DeleteState state = new DeleteState();
+
+        final Runnable deleteRunnable = new Runnable() {
+            @Override
+            public void run() {
+                long elapsed = System.currentTimeMillis() - state.startTime;
+                state.isLongPressing = true;
+
+                if (elapsed >= 3000) {
+                    if (!state.deletedAll) {
+                        mSpecialKeyListener.onSpecialKey(KEY_DELETE_ALL);
+                        state.deletedAll = true;
+                    }
+                    return;
+                } else if (elapsed >= 400) {
+                    mSpecialKeyListener.onSpecialKey(KEY_DELETE_WORD);
+                    deleteHandler.postDelayed(this, 180);
+                } else {
+                    deleteHandler.postDelayed(this, 50);
+                }
+            }
         };
 
-        int sizePx = (int) (46 * mContext.getResources().getDisplayMetrics().density);
-        int marginHorizontal = (int) (7 * mContext.getResources().getDisplayMetrics().density);
-        int marginVertical = (int) (4 * mContext.getResources().getDisplayMetrics().density);
+        del.setOnTouchListener((v, event) -> {
+            switch (event.getAction()) {
+                case android.view.MotionEvent.ACTION_DOWN:
+                    del.getBackground().setTint(Color.parseColor("#FFE94560"));
+                    del.animate().scaleX(0.92f).scaleY(0.92f).setDuration(60).start();
 
-        for (int r = 0; r < EMOJI_ROWS.length; r++) {
-            LinearLayout row = new LinearLayout(mContext);
-            row.setOrientation(LinearLayout.VERTICAL);
-            row.setPadding(0, 4, 0, 4);
+                    state.startTime = System.currentTimeMillis();
+                    state.isLongPressing = false;
+                    state.deletedAll = false;
 
-            // Category label
-            TextView label = new TextView(mContext);
-            label.setText(categoryLabels[r]);
-            label.setTextSize(11f);
-            label.setTextColor(Color.parseColor("#FF4ECDC4"));
-            label.setTypeface(Typeface.DEFAULT_BOLD);
-            label.setPadding(8, 2, 8, 4);
-            row.addView(label);
+                    // Delete single char on tap
+                    mSpecialKeyListener.onSpecialKey(KEY_DELETE);
 
-            // Emoji row with generous spacing
-            LinearLayout emojiRow = new LinearLayout(mContext);
-            emojiRow.setOrientation(LinearLayout.HORIZONTAL);
+                    deleteHandler.removeCallbacks(deleteRunnable);
+                    deleteHandler.postDelayed(deleteRunnable, 400);
+                    return true;
 
-            for (String emoji : EMOJI_ROWS[r]) {
+                case android.view.MotionEvent.ACTION_UP:
+                case android.view.MotionEvent.ACTION_CANCEL:
+                    del.getBackground().setTint(Color.parseColor("#FF2D2D44"));
+                    del.animate().scaleX(1f).scaleY(1f).setDuration(60).start();
+
+                    deleteHandler.removeCallbacks(deleteRunnable);
+                    return true;
+            }
+            return false;
+        });
+    }
+
+    // ──────────────────────────────────────────────────────────
+    // Emoji Panel – Categories with Vertical Scrolling & Grid Rows
+    // ──────────────────────────────────────────────────────────
+    private void buildEmojiPanel() {
+        if (mEmojiContainer == null) return;
+        mEmojiContainer.removeAllViews();
+
+        int marginPx = (int) (2 * mContext.getResources().getDisplayMetrics().density);
+        int padPx = (int) (4 * mContext.getResources().getDisplayMetrics().density);
+        int heightPx = (int) (42 * mContext.getResources().getDisplayMetrics().density);
+
+        for (String[] cat : EMOJI_CATEGORIES) {
+            String title = cat[0];
+
+            // Category Title
+            TextView titleView = new TextView(mContext);
+            titleView.setText(title);
+            titleView.setTextSize(12f);
+            titleView.setTextColor(Color.parseColor("#FF4ECDC4"));
+            titleView.setTypeface(Typeface.DEFAULT_BOLD);
+            titleView.setPadding(padPx * 2, padPx * 2, padPx * 2, padPx);
+            mEmojiContainer.addView(titleView);
+
+            // Group emojis into rows of 7 columns
+            LinearLayout currentRow = null;
+            int count = 0;
+            int numCols = 7;
+
+            for (int i = 1; i < cat.length; i++) {
+                final String emoji = cat[i];
+                if (count % numCols == 0) {
+                    currentRow = new LinearLayout(mContext);
+                    currentRow.setOrientation(LinearLayout.HORIZONTAL);
+                    LinearLayout.LayoutParams rowLp = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT, heightPx);
+                    rowLp.setMargins(0, marginPx, 0, marginPx);
+                    currentRow.setLayoutParams(rowLp);
+                    mEmojiContainer.addView(currentRow);
+                }
+
                 TextView ev = new TextView(mContext);
                 ev.setText(emoji);
                 ev.setTextSize(22f);
@@ -492,16 +565,46 @@ public class VietnameseKeyboardManager {
                 ev.setBackgroundResource(R.drawable.key_bg_rounded);
                 ev.getBackground().setTint(Color.parseColor("#FF16213E"));
 
-                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(sizePx, sizePx);
-                lp.setMargins(marginHorizontal, marginVertical, marginHorizontal, marginVertical);
-                ev.setLayoutParams(lp);
+                LinearLayout.LayoutParams itemLp = new LinearLayout.LayoutParams(0,
+                        LinearLayout.LayoutParams.MATCH_PARENT, 1f);
+                itemLp.setMargins(marginPx, 0, marginPx, 0);
+                ev.setLayoutParams(itemLp);
 
-                ev.setOnClickListener(v -> mKeyListener.onKey(ev.getText().toString()));
-                emojiRow.addView(ev);
+                // Click and Touch Feedback
+                ev.setOnClickListener(v -> mKeyListener.onKey(emoji));
+                ev.setOnTouchListener((v, event) -> {
+                    switch (event.getAction()) {
+                        case android.view.MotionEvent.ACTION_DOWN:
+                            ev.getBackground().setTint(Color.parseColor("#FFE94560"));
+                            ev.animate().scaleX(0.9f).scaleY(0.9f).setDuration(60).start();
+                            break;
+                        case android.view.MotionEvent.ACTION_UP:
+                        case android.view.MotionEvent.ACTION_CANCEL:
+                            ev.getBackground().setTint(Color.parseColor("#FF16213E"));
+                            ev.animate().scaleX(1f).scaleY(1f).setDuration(60).start();
+                            break;
+                    }
+                    return false;
+                });
+
+                if (currentRow != null) {
+                    currentRow.addView(ev);
+                }
+                count++;
             }
 
-            row.addView(emojiRow);
-            mEmojiContainer.addView(row);
+            // Fill empty cells in the last row for consistent spacing
+            if (currentRow != null && count % numCols != 0) {
+                int remaining = numCols - (count % numCols);
+                for (int r = 0; r < remaining; r++) {
+                    View spacer = new View(mContext);
+                    LinearLayout.LayoutParams itemLp = new LinearLayout.LayoutParams(0,
+                            LinearLayout.LayoutParams.MATCH_PARENT, 1f);
+                    itemLp.setMargins(marginPx, 0, marginPx, 0);
+                    spacer.setLayoutParams(itemLp);
+                    currentRow.addView(spacer);
+                }
+            }
         }
     }
 
@@ -568,7 +671,7 @@ public class VietnameseKeyboardManager {
     }
 
     // ──────────────────────────────────────────────────────────
-    // Public control methods
+    // Public mode and state control
     // ──────────────────────────────────────────────────────────
     public void updateShiftState(boolean shiftOn) {
         mShiftOn = shiftOn;
@@ -584,88 +687,85 @@ public class VietnameseKeyboardManager {
         }
     }
 
-    public boolean isSymbolsOn() {
-        return mSymbolsOn;
+    public KeyboardMode getCurrentMode() {
+        return mCurrentMode;
     }
 
-    public void toggleSymbolsPanel(boolean show) {
-        mSymbolsOn = show;
-        if (show) {
-            // Close emoji panel if open
-            if (mEmojiPanel != null) mEmojiPanel.setVisibility(View.GONE);
-            if (mEmojiBtn != null) mEmojiBtn.setText("😊");
+    public void setMode(KeyboardMode mode) {
+        mCurrentMode = mode;
 
-            // Hide normal letter keys and tone row
-            if (mNumberRow != null) mNumberRow.setVisibility(View.GONE);
-            if (mToneRow != null) mToneRow.setVisibility(View.GONE);
-            if (mVnRow != null) mVnRow.setVisibility(View.GONE);
-            if (mRow1 != null) mRow1.setVisibility(View.GONE);
-            if (mRow2 != null) mRow2.setVisibility(View.GONE);
-            if (mRow3 != null) mRow3.setVisibility(View.GONE);
+        // Hide all major layout panels first to prevent overlay / duplicate bugs
+        if (mNumberRow != null) mNumberRow.setVisibility(View.GONE);
+        if (mToneRow != null) mToneRow.setVisibility(View.GONE);
+        if (mVnRow != null) mVnRow.setVisibility(View.GONE);
+        if (mRow1 != null) mRow1.setVisibility(View.GONE);
+        if (mRow2 != null) mRow2.setVisibility(View.GONE);
+        if (mRow3 != null) mRow3.setVisibility(View.GONE);
+        if (mSymbolsPanel != null) mSymbolsPanel.setVisibility(View.GONE);
+        if (mEmojiPanel != null) mEmojiPanel.setVisibility(View.GONE);
 
-            // Show symbols panel
-            if (mSymbolsPanel != null) {
-                mSymbolsPanel.setVisibility(View.VISIBLE);
-                buildSymbolsPanel();
-            }
+        switch (mode) {
+            case TEXT:
+                if (mToneRow != null) mToneRow.setVisibility(View.VISIBLE);
+                if (mVnRow != null) mVnRow.setVisibility(View.VISIBLE);
+                if (mRow1 != null) mRow1.setVisibility(View.VISIBLE);
+                if (mRow2 != null) mRow2.setVisibility(View.VISIBLE);
+                if (mRow3 != null) mRow3.setVisibility(View.VISIBLE);
+                if (mNumberRow != null && mShowNumbers) mNumberRow.setVisibility(View.VISIBLE);
 
-            if (mNumToggleBtn != null) {
-                mNumToggleBtn.setText("ABC");
-                mNumToggleBtn.setTextColor(Color.parseColor("#FFFFE66D"));
-            }
+                if (mEmojiBtn != null) mEmojiBtn.setText("😊");
+                if (mNumToggleBtn != null) {
+                    mNumToggleBtn.setText("123");
+                    mNumToggleBtn.setTextColor(Color.parseColor("#FF4ECDC4"));
+                }
+                break;
+
+            case SYMBOLS:
+                if (mSymbolsPanel != null) {
+                    mSymbolsPanel.setVisibility(View.VISIBLE);
+                    buildSymbolsPanel();
+                }
+                if (mEmojiBtn != null) mEmojiBtn.setText("😊");
+                if (mNumToggleBtn != null) {
+                    mNumToggleBtn.setText("ABC");
+                    mNumToggleBtn.setTextColor(Color.parseColor("#FFFFE66D"));
+                }
+                break;
+
+            case EMOJI:
+                if (mEmojiPanel != null) {
+                    mEmojiPanel.setVisibility(View.VISIBLE);
+                    mEmojiPanel.scrollTo(0, 0);
+                }
+                if (mEmojiBtn != null) mEmojiBtn.setText("⌨️");
+                if (mNumToggleBtn != null) {
+                    mNumToggleBtn.setText("123");
+                    mNumToggleBtn.setTextColor(Color.parseColor("#FF4ECDC4"));
+                }
+                break;
+        }
+    }
+
+    public void toggleEmoji() {
+        if (mCurrentMode == KeyboardMode.EMOJI) {
+            setMode(KeyboardMode.TEXT);
         } else {
-            // Restore normal letter keys
-            if (mSymbolsPanel != null) mSymbolsPanel.setVisibility(View.GONE);
+            setMode(KeyboardMode.EMOJI);
+        }
+    }
 
-            if (mToneRow != null) mToneRow.setVisibility(View.VISIBLE);
-            if (mVnRow != null) mVnRow.setVisibility(View.VISIBLE);
-            if (mRow1 != null) mRow1.setVisibility(View.VISIBLE);
-            if (mRow2 != null) mRow2.setVisibility(View.VISIBLE);
-            if (mRow3 != null) mRow3.setVisibility(View.VISIBLE);
-            if (mNumberRow != null) mNumberRow.setVisibility(mShowNumbers ? View.VISIBLE : View.GONE);
-
-            if (mNumToggleBtn != null) {
-                mNumToggleBtn.setText("123");
-                mNumToggleBtn.setTextColor(Color.parseColor("#FF4ECDC4"));
-            }
+    public void toggleSymbols() {
+        if (mCurrentMode == KeyboardMode.SYMBOLS) {
+            setMode(KeyboardMode.TEXT);
+        } else {
+            setMode(KeyboardMode.SYMBOLS);
         }
     }
 
     public void toggleNumberRow(boolean show) {
         mShowNumbers = show;
-        if (mEmojiPanel.getVisibility() != View.VISIBLE && !mSymbolsOn) {
+        if (mCurrentMode == KeyboardMode.TEXT && mNumberRow != null) {
             mNumberRow.setVisibility(show ? View.VISIBLE : View.GONE);
-        }
-    }
-
-    public void toggleEmojiPanel(boolean show) {
-        if (show) {
-            // Ẩn tất cả các hàng phím chữ, số và ký hiệu đi cho gọn
-            if (mSymbolsPanel != null) mSymbolsPanel.setVisibility(View.GONE);
-            mSymbolsOn = false;
-            if (mNumToggleBtn != null) {
-                mNumToggleBtn.setText("123");
-                mNumToggleBtn.setTextColor(Color.parseColor("#FF4ECDC4"));
-            }
-
-            if (mNumberRow != null) mNumberRow.setVisibility(View.GONE);
-            if (mToneRow != null) mToneRow.setVisibility(View.GONE);
-            if (mVnRow != null) mVnRow.setVisibility(View.GONE);
-            if (mRow1 != null) mRow1.setVisibility(View.GONE);
-            if (mRow2 != null) mRow2.setVisibility(View.GONE);
-            if (mRow3 != null) mRow3.setVisibility(View.GONE);
-            if (mEmojiPanel != null) mEmojiPanel.setVisibility(View.VISIBLE);
-            if (mEmojiBtn != null) mEmojiBtn.setText("⌨️");
-        } else {
-            // Hiện lại toàn bộ phím chữ và số
-            if (mToneRow != null) mToneRow.setVisibility(View.VISIBLE);
-            if (mVnRow != null) mVnRow.setVisibility(View.VISIBLE);
-            if (mRow1 != null) mRow1.setVisibility(View.VISIBLE);
-            if (mRow2 != null) mRow2.setVisibility(View.VISIBLE);
-            if (mRow3 != null) mRow3.setVisibility(View.VISIBLE);
-            if (mNumberRow != null) mNumberRow.setVisibility(mShowNumbers ? View.VISIBLE : View.GONE);
-            if (mEmojiPanel != null) mEmojiPanel.setVisibility(View.GONE);
-            if (mEmojiBtn != null) mEmojiBtn.setText("😊");
         }
     }
 }
