@@ -7,6 +7,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.inputmethod.EditorInfo;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -32,6 +33,7 @@ public class VietnameseKeyboardManager {
     public static final int KEY_TOGGLE_EMOJI    = -6;
     public static final int KEY_DELETE_WORD     = -7;
     public static final int KEY_DELETE_ALL      = -8;
+    public static final int KEY_ENTER_NEWLINE   = -9;
 
     // Vietnamese tones
     public static final String TONE_ACUTE = "TONE:ACUTE"; // Sắc
@@ -115,6 +117,8 @@ public class VietnameseKeyboardManager {
     private List<TextView> mAllLetterKeys = new ArrayList<>();
     private TextView mEmojiBtn;
     private TextView mNumToggleBtn;
+    private TextView mEnterBtn;
+    private int mEnterBgColor = Color.parseColor("#FFE94560");
     private TextView mShiftKey; // reference to ⇧ key for visual update
     private ShiftState mShiftState = ShiftState.OFF;
     private boolean mShiftOn = false; // convenience alias: true when ON or CAPS_LOCK
@@ -420,11 +424,11 @@ public class VietnameseKeyboardManager {
         questionBtn.setOnClickListener(v -> mKeyListener.onKey("?"));
         mRowBottom.addView(questionBtn);
 
-        // Enter/Return
-        TextView enter = makeKey("⏎ Gửi", 13, "#FFE94560", "#FFFFFFFF");
-        enter.setLayoutParams(lpEnter);
-        enter.setOnClickListener(v -> mSpecialKeyListener.onSpecialKey(KEY_ENTER));
-        mRowBottom.addView(enter);
+        // Enter/Return / Send
+        mEnterBtn = makeKey("⏎ Gửi", 13, "#FFE94560", "#FFFFFFFF");
+        mEnterBtn.setLayoutParams(lpEnter);
+        setupEnterKey(mEnterBtn);
+        mRowBottom.addView(mEnterBtn);
     }
 
     // ──────────────────────────────────────────────────────────
@@ -604,6 +608,109 @@ public class VietnameseKeyboardManager {
             }
             return false;
         });
+    }
+
+    // ──────────────────────────────────────────────────────────
+    // Enter / Send key behavior:
+    // - Tap: Trigger primary action (Send / Search / Done / Go / Newline)
+    // - Long-press (>350ms): Alternate action (Newline if Send mode, or Action if Newline mode)
+    // ──────────────────────────────────────────────────────────
+    private void setupEnterKey(TextView enter) {
+        Handler enterHandler = new Handler(Looper.getMainLooper());
+        class EnterState {
+            boolean isLongPress = false;
+        }
+        final EnterState state = new EnterState();
+
+        final Runnable longPressRunnable = () -> {
+            state.isLongPress = true;
+            mSpecialKeyListener.onSpecialKey(KEY_ENTER_NEWLINE);
+            // Visual bounce feedback on long press trigger
+            enter.animate().scaleX(1.08f).scaleY(1.08f).setDuration(80).withEndAction(() -> {
+                enter.animate().scaleX(1.0f).scaleY(1.0f).setDuration(80).start();
+            }).start();
+        };
+
+        enter.setOnTouchListener((v, event) -> {
+            switch (event.getAction()) {
+                case android.view.MotionEvent.ACTION_DOWN:
+                    state.isLongPress = false;
+                    enter.getBackground().setTint(Color.parseColor("#FFFF6B6B"));
+                    enter.animate().scaleX(0.94f).scaleY(0.94f).setDuration(40).start();
+                    enterHandler.removeCallbacks(longPressRunnable);
+                    enterHandler.postDelayed(longPressRunnable, 350);
+                    return true;
+
+                case android.view.MotionEvent.ACTION_UP:
+                    enter.getBackground().setTint(mEnterBgColor);
+                    enter.animate().scaleX(1f).scaleY(1f).setDuration(40).start();
+                    enterHandler.removeCallbacks(longPressRunnable);
+                    if (!state.isLongPress) {
+                        mSpecialKeyListener.onSpecialKey(KEY_ENTER);
+                    }
+                    return true;
+
+                case android.view.MotionEvent.ACTION_CANCEL:
+                    enter.getBackground().setTint(mEnterBgColor);
+                    enter.animate().scaleX(1f).scaleY(1f).setDuration(40).start();
+                    enterHandler.removeCallbacks(longPressRunnable);
+                    return true;
+            }
+            return false;
+        });
+    }
+
+    /** Update enter key label and style dynamically according to EditorInfo (like Laban Key / Samsung Keyboard) */
+    public void updateEnterKey(EditorInfo info) {
+        if (mEnterBtn == null) return;
+        if (info == null) {
+            mEnterBtn.setText("⏎ Gửi");
+            mEnterBgColor = Color.parseColor("#FFE94560");
+            if (mEnterBtn.getBackground() != null) {
+                mEnterBtn.getBackground().setTint(mEnterBgColor);
+            }
+            return;
+        }
+
+        int action = info.imeOptions & EditorInfo.IME_MASK_ACTION;
+        boolean isMultiLine = (info.inputType & EditorInfo.TYPE_MASK_CLASS) == EditorInfo.TYPE_CLASS_TEXT &&
+                (info.inputType & EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE) != 0;
+        boolean hasNoEnterAction = (info.imeOptions & EditorInfo.IME_FLAG_NO_ENTER_ACTION) != 0;
+
+        String label;
+        String colorHex;
+
+        if (info.actionLabel != null && info.actionLabel.length() > 0) {
+            label = info.actionLabel.toString();
+            colorHex = "#FFE94560";
+        } else if (action == EditorInfo.IME_ACTION_SEARCH) {
+            label = "🔍 Tìm";
+            colorHex = "#FF1E3A5F";
+        } else if (action == EditorInfo.IME_ACTION_SEND) {
+            label = "⏎ Gửi";
+            colorHex = "#FFE94560";
+        } else if (action == EditorInfo.IME_ACTION_NEXT) {
+            label = "Tiếp ⇥";
+            colorHex = "#FF1E3A5F";
+        } else if (action == EditorInfo.IME_ACTION_DONE) {
+            label = "Xong ✓";
+            colorHex = "#FF1E3A5F";
+        } else if (action == EditorInfo.IME_ACTION_GO) {
+            label = "⏎ Đi";
+            colorHex = "#FFE94560";
+        } else if (isMultiLine || hasNoEnterAction || action == EditorInfo.IME_ACTION_NONE || action == EditorInfo.IME_ACTION_UNSPECIFIED) {
+            label = "↵";
+            colorHex = "#FF2D2D44";
+        } else {
+            label = "⏎ Gửi";
+            colorHex = "#FFE94560";
+        }
+
+        mEnterBtn.setText(label);
+        mEnterBgColor = Color.parseColor(colorHex);
+        if (mEnterBtn.getBackground() != null) {
+            mEnterBtn.getBackground().setTint(mEnterBgColor);
+        }
     }
 
     // ──────────────────────────────────────────────────────────

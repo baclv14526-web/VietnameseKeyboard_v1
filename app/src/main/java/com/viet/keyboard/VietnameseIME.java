@@ -13,6 +13,7 @@ public class VietnameseIME extends InputMethodService {
     private boolean mShowNumbers = true;
     private boolean mShowEmoji = false;
     private boolean mShiftOn = false;
+    private EditorInfo mCurrentEditorInfo;
 
     @Override
     public View onCreateInputView() {
@@ -27,9 +28,11 @@ public class VietnameseIME extends InputMethodService {
     @Override
     public void onStartInputView(EditorInfo info, boolean restarting) {
         super.onStartInputView(info, restarting);
+        mCurrentEditorInfo = info;
         if (mKeyboardManager != null) {
             mShiftOn = false;
             mKeyboardManager.resetKeyboardState();
+            mKeyboardManager.updateEnterKey(info);
         }
     }
 
@@ -149,8 +152,11 @@ public class VietnameseIME extends InputMethodService {
                 break;
 
             case VietnameseKeyboardManager.KEY_ENTER:
-                ic.performEditorAction(EditorInfo.IME_ACTION_GO);
-                sendDefaultEditorAction(true);
+                handleEnterTap(ic);
+                break;
+
+            case VietnameseKeyboardManager.KEY_ENTER_NEWLINE:
+                handleEnterLongPress(ic);
                 break;
 
             case VietnameseKeyboardManager.KEY_SHIFT:
@@ -194,5 +200,69 @@ public class VietnameseIME extends InputMethodService {
         }
 
         ic.deleteSurroundingText(deleteCount, 0);
+    }
+
+    private void handleEnterTap(InputConnection ic) {
+        if (mCurrentEditorInfo == null) {
+            if (!ic.performEditorAction(EditorInfo.IME_ACTION_SEND)) {
+                sendDefaultEditorAction(true);
+            }
+            return;
+        }
+
+        // Shift + Enter always inserts newline
+        if (mShiftOn) {
+            commitNewLine(ic);
+            return;
+        }
+
+        int action = mCurrentEditorInfo.imeOptions & EditorInfo.IME_MASK_ACTION;
+        boolean isMultiLine = (mCurrentEditorInfo.inputType & EditorInfo.TYPE_MASK_CLASS) == EditorInfo.TYPE_CLASS_TEXT &&
+                (mCurrentEditorInfo.inputType & EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE) != 0;
+        boolean hasNoEnterAction = (mCurrentEditorInfo.imeOptions & EditorInfo.IME_FLAG_NO_ENTER_ACTION) != 0;
+
+        if (mCurrentEditorInfo.actionId != 0) {
+            ic.performEditorAction(mCurrentEditorInfo.actionId);
+        } else if (action == EditorInfo.IME_ACTION_SEND ||
+                   action == EditorInfo.IME_ACTION_SEARCH ||
+                   action == EditorInfo.IME_ACTION_GO ||
+                   action == EditorInfo.IME_ACTION_NEXT ||
+                   action == EditorInfo.IME_ACTION_DONE) {
+            ic.performEditorAction(action);
+        } else if (isMultiLine || hasNoEnterAction || action == EditorInfo.IME_ACTION_NONE || action == EditorInfo.IME_ACTION_UNSPECIFIED) {
+            commitNewLine(ic);
+        } else {
+            if (!ic.performEditorAction(EditorInfo.IME_ACTION_SEND)) {
+                sendDefaultEditorAction(true);
+            }
+        }
+    }
+
+    private void handleEnterLongPress(InputConnection ic) {
+        if (mCurrentEditorInfo == null) {
+            commitNewLine(ic);
+            return;
+        }
+
+        int action = mCurrentEditorInfo.imeOptions & EditorInfo.IME_MASK_ACTION;
+        boolean isMultiLine = (mCurrentEditorInfo.inputType & EditorInfo.TYPE_MASK_CLASS) == EditorInfo.TYPE_CLASS_TEXT &&
+                (mCurrentEditorInfo.inputType & EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE) != 0;
+        boolean hasNoEnterAction = (mCurrentEditorInfo.imeOptions & EditorInfo.IME_FLAG_NO_ENTER_ACTION) != 0;
+
+        // If in newline mode: long-press performs editor action (e.g. send/submit)
+        if (isMultiLine || hasNoEnterAction || action == EditorInfo.IME_ACTION_NONE || action == EditorInfo.IME_ACTION_UNSPECIFIED) {
+            if (mCurrentEditorInfo.actionId != 0) {
+                ic.performEditorAction(mCurrentEditorInfo.actionId);
+            } else if (!sendDefaultEditorAction(true)) {
+                commitNewLine(ic);
+            }
+        } else {
+            // In action/send mode: long-press inserts a newline \n
+            commitNewLine(ic);
+        }
+    }
+
+    private void commitNewLine(InputConnection ic) {
+        ic.commitText("\n", 1);
     }
 }
