@@ -363,26 +363,26 @@ public class VietnameseKeyboardManager {
     }
 
     // ──────────────────────────────────────────────────────────
-    // Bottom row: [😊][123][,][  Khoảng trắng  ][.][⏎ Gửi]
+    // Bottom row: [😊][123][,][  Khoảng trắng  ][.][?][⏎ Gửi]
     // ──────────────────────────────────────────────────────────
     private void buildBottomRow() {
         mRowBottom.removeAllViews();
 
         LinearLayout.LayoutParams lpSmall = new LinearLayout.LayoutParams(0,
-                LinearLayout.LayoutParams.MATCH_PARENT, 1.1f);
-        lpSmall.setMargins(3, 0, 3, 0);
+                LinearLayout.LayoutParams.MATCH_PARENT, 0.95f);
+        lpSmall.setMargins(2, 0, 2, 0);
 
         LinearLayout.LayoutParams lpPunct = new LinearLayout.LayoutParams(0,
-                LinearLayout.LayoutParams.MATCH_PARENT, 1.1f);
-        lpPunct.setMargins(3, 0, 3, 0);
+                LinearLayout.LayoutParams.MATCH_PARENT, 0.95f);
+        lpPunct.setMargins(2, 0, 2, 0);
 
         LinearLayout.LayoutParams lpSpace = new LinearLayout.LayoutParams(0,
                 LinearLayout.LayoutParams.MATCH_PARENT, 3.8f);
-        lpSpace.setMargins(3, 0, 3, 0);
+        lpSpace.setMargins(2, 0, 2, 0);
 
         LinearLayout.LayoutParams lpEnter = new LinearLayout.LayoutParams(0,
-                LinearLayout.LayoutParams.MATCH_PARENT, 1.5f);
-        lpEnter.setMargins(3, 0, 3, 0);
+                LinearLayout.LayoutParams.MATCH_PARENT, 1.45f);
+        lpEnter.setMargins(2, 0, 2, 0);
 
         // Emoji toggle
         mEmojiBtn = makeKey("😊", 18, "#FF1A1A2E", "#FFFFFFFF");
@@ -402,10 +402,10 @@ public class VietnameseKeyboardManager {
         commaBtn.setOnClickListener(v -> mKeyListener.onKey(","));
         mRowBottom.addView(commaBtn);
 
-        // Space (Khoảng trắng)
+        // Space (Khoảng trắng - tối ưu độ nhạy tức thì khi chạm)
         TextView space = makeKey("Khoảng trắng", 12, "#FF2D2D44", "#FFAAAACC");
         space.setLayoutParams(lpSpace);
-        space.setOnClickListener(v -> mSpecialKeyListener.onSpecialKey(KEY_SPACE));
+        setupSpaceKey(space, "#FF2D2D44");
         mRowBottom.addView(space);
 
         // Period (dấu chấm ở bên phải khoảng trắng)
@@ -413,6 +413,12 @@ public class VietnameseKeyboardManager {
         dotBtn.setLayoutParams(lpPunct);
         dotBtn.setOnClickListener(v -> mKeyListener.onKey("."));
         mRowBottom.addView(dotBtn);
+
+        // Question mark (dấu hỏi ? bên cạnh dấu chấm)
+        TextView questionBtn = makeKey("?", 16, "#FF2D2D44", "#FFFFFFFF");
+        questionBtn.setLayoutParams(lpPunct);
+        questionBtn.setOnClickListener(v -> mKeyListener.onKey("?"));
+        mRowBottom.addView(questionBtn);
 
         // Enter/Return
         TextView enter = makeKey("⏎ Gửi", 13, "#FFE94560", "#FFFFFFFF");
@@ -552,6 +558,48 @@ public class VietnameseKeyboardManager {
                     del.animate().scaleX(1f).scaleY(1f).setDuration(60).start();
 
                     deleteHandler.removeCallbacks(deleteRunnable);
+                    return true;
+            }
+            return false;
+        });
+    }
+
+    // ──────────────────────────────────────────────────────────
+    // Space key behavior:
+    // - Immediate trigger on ACTION_DOWN (0ms latency, high sensitivity)
+    // - Fast visual response (40ms animation)
+    // - Continuous repeat if held down (>400ms)
+    // ──────────────────────────────────────────────────────────
+    private void setupSpaceKey(TextView space, String bgHex) {
+        Handler spaceHandler = new Handler(Looper.getMainLooper());
+        final Runnable repeatRunnable = new Runnable() {
+            @Override
+            public void run() {
+                mSpecialKeyListener.onSpecialKey(KEY_SPACE);
+                spaceHandler.postDelayed(this, 100);
+            }
+        };
+
+        space.setOnTouchListener((v, event) -> {
+            switch (event.getAction()) {
+                case android.view.MotionEvent.ACTION_DOWN:
+                    space.getBackground().setTint(Color.parseColor("#FFE94560"));
+                    space.animate().scaleX(0.96f).scaleY(0.96f).setDuration(40).start();
+
+                    // Instant space on press
+                    mSpecialKeyListener.onSpecialKey(KEY_SPACE);
+
+                    // Repeat if held
+                    spaceHandler.removeCallbacks(repeatRunnable);
+                    spaceHandler.postDelayed(repeatRunnable, 400);
+                    return true;
+
+                case android.view.MotionEvent.ACTION_UP:
+                case android.view.MotionEvent.ACTION_CANCEL:
+                    space.getBackground().setTint(Color.parseColor(bgHex));
+                    space.animate().scaleX(1f).scaleY(1f).setDuration(40).start();
+
+                    spaceHandler.removeCallbacks(repeatRunnable);
                     return true;
             }
             return false;
