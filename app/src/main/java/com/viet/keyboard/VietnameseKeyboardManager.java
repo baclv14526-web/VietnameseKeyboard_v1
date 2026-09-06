@@ -89,7 +89,7 @@ public class VietnameseKeyboardManager {
     // Symbols and Numbers layouts (Samsung keyboard style)
     private static final String[] SYM_PAGE1_ROW1 = {"1","2","3","4","5","6","7","8","9","0"};
     private static final String[] SYM_PAGE1_ROW2 = {"@","#","$","%","&","-","+","(",")","/"};
-    private static final String[] SYM_PAGE1_ROW3 = {"*","\"", "'",":",";","!","?","~","\\","="};
+    private static final String[] SYM_PAGE1_ROW3 = {"*","\"", "'",":",";","!","\u{2192}","~","\\","="};
     private static final String[] SYM_PAGE1_ROW4 = {"_","<",">","[","]","{","}","^"};
 
     private static final String[] SYM_PAGE2_ROW1 = {"1","2","3","4","5","6","7","8","9","0"};
