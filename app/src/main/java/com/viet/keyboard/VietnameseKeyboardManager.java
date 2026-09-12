@@ -367,7 +367,7 @@ public class VietnameseKeyboardManager {
     }
 
     // ──────────────────────────────────────────────────────────
-    // Bottom row: [😊][123][,][  Khoảng trắng  ][.][?][⏎ Gửi]
+    // Bottom row: [😊][78@][,][  Khoảng trắng  ][.][?][⏎ Gửi]
     // ──────────────────────────────────────────────────────────
     private void buildBottomRow() {
         mRowBottom.removeAllViews();
@@ -394,8 +394,8 @@ public class VietnameseKeyboardManager {
         mEmojiBtn.setOnClickListener(v -> mSpecialKeyListener.onSpecialKey(KEY_TOGGLE_EMOJI));
         mRowBottom.addView(mEmojiBtn);
 
-        // Number row toggle (123 / ABC)
-        mNumToggleBtn = makeKey("123", 13, "#FF1A1A2E", "#FF4ECDC4");
+        // Number row toggle (78@ / ABC)
+        mNumToggleBtn = makeKey("78@", 13, "#FF1A1A2E", "#FF4ECDC4");
         mNumToggleBtn.setLayoutParams(lpSmall);
         mNumToggleBtn.setOnClickListener(v -> mSpecialKeyListener.onSpecialKey(KEY_TOGGLE_NUMBERS));
         mRowBottom.addView(mNumToggleBtn);
@@ -964,7 +964,7 @@ public class VietnameseKeyboardManager {
 
                 if (mEmojiBtn != null) mEmojiBtn.setText("😊");
                 if (mNumToggleBtn != null) {
-                    mNumToggleBtn.setText("123");
+                    mNumToggleBtn.setText("78@");
                     mNumToggleBtn.setTextColor(Color.parseColor("#FF4ECDC4"));
                 }
                 break;
@@ -988,7 +988,7 @@ public class VietnameseKeyboardManager {
                 }
                 if (mEmojiBtn != null) mEmojiBtn.setText("⌨️");
                 if (mNumToggleBtn != null) {
-                    mNumToggleBtn.setText("123");
+                    mNumToggleBtn.setText("78@");
                     mNumToggleBtn.setTextColor(Color.parseColor("#FF4ECDC4"));
                 }
                 break;
