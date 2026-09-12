@@ -389,22 +389,22 @@ public class VietnameseKeyboardManager {
         lpEnter.setMargins(2, 0, 2, 0);
 
         // Emoji toggle
-        mEmojiBtn = makeKey("😊", 18, "#FF2D2D44", "#FFFFFFFF");
+        mEmojiBtn = makeKey("😊", 18, "#FF1A1A2E", "#FFFFFFFF");
         mEmojiBtn.setLayoutParams(lpSmall);
         mEmojiBtn.setOnClickListener(v -> mSpecialKeyListener.onSpecialKey(KEY_TOGGLE_EMOJI));
         mRowBottom.addView(mEmojiBtn);
 
-        // Number row toggle (789@ / ABC)
-        mNumToggleBtn = makeKey("789@", 13, "#FF2D2D44", "#FF4ECDC4");
+        // Number row toggle (123 / ABC)
+        mNumToggleBtn = makeKey("123", 13, "#FF1A1A2E", "#FF4ECDC4");
         mNumToggleBtn.setLayoutParams(lpSmall);
         mNumToggleBtn.setOnClickListener(v -> mSpecialKeyListener.onSpecialKey(KEY_TOGGLE_NUMBERS));
         mRowBottom.addView(mNumToggleBtn);
 
-        // Question mark (dấu hỏi ? ở bên trái khoảng trắng)
-        TextView questionBtn = makeKey("?", 16, "#FF2D2D44", "#FFFFFFFF");
-        questionBtn.setLayoutParams(lpPunct);
-        questionBtn.setOnClickListener(v -> mKeyListener.onKey("?"));
-        mRowBottom.addView(questionBtn);
+        // Comma (dấu phẩy ở bên trái khoảng trắng)
+        TextView commaBtn = makeKey(",", 16, "#FF2D2D44", "#FFFFFFFF");
+        commaBtn.setLayoutParams(lpPunct);
+        commaBtn.setOnClickListener(v -> mKeyListener.onKey(","));
+        mRowBottom.addView(commaBtn);
 
         // Space (Khoảng trắng - tối ưu độ nhạy tức thì khi chạm)
         TextView space = makeKey("Khoảng trắng", 12, "#FF2D2D44", "#FFAAAACC");
@@ -418,11 +418,11 @@ public class VietnameseKeyboardManager {
         dotBtn.setOnClickListener(v -> mKeyListener.onKey("."));
         mRowBottom.addView(dotBtn);
 
-        // Comma (dấu phẩy ở bên cạnh dấu chấm)
-        TextView commaBtn = makeKey(",", 16, "#FF2D2D44", "#FFFFFFFF");
-        commaBtn.setLayoutParams(lpPunct);
-        commaBtn.setOnClickListener(v -> mKeyListener.onKey(","));
-        mRowBottom.addView(commaBtn);
+        // Question mark (dấu hỏi ? bên cạnh dấu chấm)
+        TextView questionBtn = makeKey("?", 16, "#FF2D2D44", "#FFFFFFFF");
+        questionBtn.setLayoutParams(lpPunct);
+        questionBtn.setOnClickListener(v -> mKeyListener.onKey("?"));
+        mRowBottom.addView(questionBtn);
 
         // Enter/Return / Send
         mEnterBtn = makeKey("⏎ Gửi", 13, "#FFE94560", "#FFFFFFFF");
@@ -760,8 +760,8 @@ public class VietnameseKeyboardManager {
                 ev.setSingleLine(true);
                 ev.setGravity(Gravity.CENTER);
                 ev.setBackgroundResource(R.drawable.key_bg_rounded);
-                // Nền xám xanh slate tinh tế làm nổi bật mọi sắc màu emoji: màu cũ #FF282B42
-                ev.getBackground().setTint(Color.parseColor("#CCFFFFFF"));
+                // Nền xám xanh slate tinh tế làm nổi bật mọi sắc màu emoji
+                ev.getBackground().setTint(Color.parseColor("#FF282B42"));
 
                 LinearLayout.LayoutParams itemLp = new LinearLayout.LayoutParams(0,
                         LinearLayout.LayoutParams.MATCH_PARENT, 1f);
