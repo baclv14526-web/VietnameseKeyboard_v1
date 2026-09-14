@@ -37,7 +37,7 @@ VietnameseKeyboard/
 
 ### 🇻🇳 Tiếng Việt đầy đủ
 - **29 chữ cái** tiếng Việt đầy đủ
-- Chữ cái đặc biệt: **ă, â, đ, ê, ô, ơ, ư** (có trong hàng dấu thanh)
+- Chữ cái đặc biệt: **ă, â, đ, ê, ô, ơ, ư** (có trong hàng dấu thanh riêng)
 - Phím **Shift** để gõ chữ hoa
 
 ### 🎵 Dấu Thanh (6 thanh)
